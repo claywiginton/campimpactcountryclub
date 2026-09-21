@@ -15,15 +15,29 @@ needed once the page is loaded. Works offline on a phone in the middle of a fiel
    hole has a score. The `‹` `›` arrows jump back and forth freely.
 3. **Scorecard** — live leaderboard (sorted by score to par) plus the full grid
    with OUT / IN / total. Tap any cell to jump back to that hole and fix it.
+4. **Rules** — the full house rules, always one tap away from the bottom nav (and
+   from a button on the first screen, for the pre-round briefing).
 
 Scores save to the browser automatically, so closing the tab or locking the phone
 doesn't lose the round. Reopening drops you back on the first unfinished hole.
 
-## Rules baked in
+## The rules
 
-- **Max score is double par** on every hole — the buttons simply stop there, with
-  the top one marked `MAX`.
-- Par is marked on the button for each hole so you don't have to remember it.
+Written out in full on the **Rules** screen in the app. In brief:
+
+- **Tee off within 1 meter** of the yellow tee marker.
+- **Finishing a hole** — agree on a mode before hole 1. *Easy:* hit the tire.
+  *Normal:* the ball comes to rest in the tire, hits the pole, or hits the cone.
+- **Play it where it lies.** The ball never gets moved. If it's genuinely
+  unplayable, place it at the nearest playable point no closer to the hole and
+  take a one-hit penalty.
+- **One motion, one hit.** A kick, a drag, a scoop with the foot, or a pinch
+  between both feet and a flick — all fine, as long as it's one unbroken motion
+  touching the ball once.
+- **Max score is double par** on every hole. The app enforces this: the score
+  buttons stop at double par, with the last one marked `MAX`.
+
+Par for each hole is marked right on its score button, so nobody has to remember it.
 
 ## The course
 

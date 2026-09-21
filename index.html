@@ -130,6 +130,30 @@
   nav button.on{color:var(--green);box-shadow:inset 0 3px 0 var(--green-mid)}
   .hide{display:none !important}
   .note{font-size:13px;color:var(--muted);text-align:center;margin:10px 0}
+
+  /* ---------- rules ---------- */
+  .rule{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+        padding:14px 14px 4px;margin-bottom:12px}
+  .rule h3{margin:0 0 4px;font-size:17px;color:var(--green);display:flex;align-items:center;gap:8px}
+  .rule h3 .rn{
+    flex:none;width:24px;height:24px;border-radius:99px;background:var(--green);color:#fff;
+    font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center
+  }
+  .rule p{margin:8px 0;font-size:15px;line-height:1.5}
+  .rule ul{margin:8px 0;padding-left:20px;font-size:15px;line-height:1.5}
+  .rule li{margin-bottom:6px}
+  .rule li::marker{color:var(--green-mid)}
+  .mode{border-left:4px solid var(--green-mid);background:var(--green-light);
+        border-radius:8px;padding:10px 12px;margin:10px 0}
+  .mode > b{color:var(--green);display:block;margin-bottom:2px;font-size:15px}
+  .mode span{font-size:14px;line-height:1.45;display:block}
+  .mode span b{color:var(--ink)}
+  .yes,.no{font-size:15px;line-height:1.5;margin:8px 0;padding-left:20px}
+  .yes li::marker{content:"\2713  ";color:var(--green-mid);font-weight:700}
+  .no li::marker{content:"\2715  ";color:var(--red);font-weight:700}
+  .callout{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;
+           padding:12px;font-size:15px;line-height:1.5;margin-bottom:12px}
+  .callout b{color:var(--gold)}
   .stack>*+*{margin-top:10px}
 </style>
 </head>
@@ -166,6 +190,7 @@
     </div>
 
     <button class="btn" id="startBtn" disabled>Start Round</button>
+    <button class="btn ghost" id="setupRulesBtn" style="margin-top:10px">Read the Rules</button>
     <div id="resumeWrap" class="hide" style="margin-top:10px">
       <button class="btn ghost" id="resumeBtn">Resume round in progress</button>
     </div>
@@ -204,11 +229,116 @@
     </div>
   </section>
 
+  <!-- ============ RULES ============ -->
+  <section id="v-rules" class="hide">
+    <h2>House Rules</h2>
+
+    <div class="callout">
+      <b>The short version:</b> tee off within a meter of the yellow marker, play
+      the ball exactly where it lies, every attempt is one motion and one hit, and
+      nobody scores worse than double par.
+    </div>
+
+    <div class="rule">
+      <h3><span class="rn">1</span> Teeing off</h3>
+      <p>Start each hole with the ball on the ground <b>within 1 meter of the yellow
+      tee marker</b>. Anywhere inside that circle is fair &mdash; in front, behind, or
+      off to the side.</p>
+      <p>Your tee shot is hit number one on that hole.</p>
+    </div>
+
+    <div class="rule">
+      <h3><span class="rn">2</span> Finishing a hole</h3>
+      <p>Pick one mode before anyone tees off on hole 1, and play it the whole round
+      so everyone's scores mean the same thing.</p>
+      <div class="mode">
+        <b>Easy mode</b>
+        <span>Hit the tire. Any contact between your ball and the tire finishes
+        the hole.</span>
+      </div>
+      <div class="mode">
+        <b>Normal mode</b>
+        <span>Finish it one of three ways: the ball <b>comes to rest in the tire</b>,
+        or your ball <b>hits the pole</b>, or your ball <b>hits the cone</b>. Rolling
+        through the tire without staying in it doesn't count &mdash; play on from
+        wherever it stops.</span>
+      </div>
+      <p>The hit that finishes the hole counts like any other. Mixed group? Nothing
+      stops a younger player using easy mode &mdash; just agree up front.</p>
+    </div>
+
+    <div class="rule">
+      <h3><span class="rn">3</span> Play it where it lies</h3>
+      <p><b>You can never move the ball.</b> Wherever it stops is where you play from
+      &mdash; long grass, a slope, mud, up against a root. No nudging it to a better
+      spot, no flattening what's around it, no kicking obstacles out of the way.</p>
+      <p><b>If the ball is genuinely unplayable</b> &mdash; out of reach, wedged under
+      something, in water, against a wall &mdash; you may place it at the
+      <b>nearest playable point, no closer to the hole</b>, and add
+      <b>one penalty hit</b> to your score.</p>
+      <ul>
+        <li>Nearest, not nicest. Measure from where the ball actually sits and move
+        the shortest distance that makes it playable.</li>
+        <li>The penalty is +1 on your card. Your next attempt from the new spot
+        counts as a normal hit on top of that.</li>
+        <li>You decide whether your own ball is unplayable, but the group decides
+        where it gets placed.</li>
+      </ul>
+    </div>
+
+    <div class="rule">
+      <h3><span class="rn">4</span> One motion, one hit</h3>
+      <p>Every attempt must be a <b>single continuous motion</b> that touches the ball
+      <b>once</b>. Within that, get creative:</p>
+      <ul class="yes">
+        <li>A normal kick.</li>
+        <li><b>Drag it</b> &mdash; pull or push the ball along with your foot, as long
+        as it's one unbroken motion.</li>
+        <li><b>Scoop it</b> &mdash; pick the ball up with your foot and flick it away,
+        all in one motion.</li>
+        <li><b>Pinch and flick</b> &mdash; trap the ball between both feet and flick it
+        forward, again in one motion.</li>
+      </ul>
+      <p>What breaks the rule:</p>
+      <ul class="no">
+        <li>Two separate kicks, or a touch to set it up before the real hit.</li>
+        <li>Juggling, dribbling, or stopping mid-motion and starting again.</li>
+        <li>Picking the ball up with your hands, or carrying or throwing it.</li>
+      </ul>
+      <p>A whiff still counts as a hit. If you double-touch by accident, the attempt
+      counts and you play the ball from wherever it ends up.</p>
+    </div>
+
+    <div class="rule">
+      <h3><span class="rn">5</span> Scoring</h3>
+      <p>Count every attempt, plus any penalty hits, and record the total for the
+      hole.</p>
+      <p><b>The most you can score on any hole is double par</b> &mdash; 8 on a par 4,
+      6 on a par 3, 10 on a par 5. Once you hit that number, pick the ball up, take
+      the max, and move to the next tee. This app won't let you enter more.</p>
+      <p>Lowest total after all 18 holes wins.</p>
+    </div>
+
+    <div class="rule">
+      <h3><span class="rn">6</span> Good form</h3>
+      <ul>
+        <li>Whoever is furthest from the hole plays next.</li>
+        <li>Never kick while someone is downrange &mdash; shout before you strike if
+        you can't see.</li>
+        <li>Anything these rules don't cover, the group settles on the spot. It's the
+        honor system out there.</li>
+      </ul>
+    </div>
+
+    <button class="btn ghost" id="rulesBack">Back</button>
+  </section>
+
 </div>
 
 <nav id="nav" class="hide">
   <button data-view="play" id="navPlay"><b>&#9971;</b>Play</button>
   <button data-view="card" id="navCard"><b>&#128203;</b>Scorecard</button>
+  <button data-view="rules" id="navRules"><b>&#128214;</b>Rules</button>
 </nav>
 
 <script>
@@ -227,6 +357,7 @@
     started: false
   };
   var view = "setup";
+  var backTo = "setup";   // where the Back button on the rules screen returns to
 
   /* ---------------- storage ---------------- */
   function save(){
@@ -311,13 +442,19 @@
 
   /* ---------------- views ---------------- */
   function show(v){
+    if(v === "rules" && view !== "rules") backTo = view;
     view = v;
     $("v-setup").classList.toggle("hide", v !== "setup");
     $("v-play").classList.toggle("hide", v !== "play");
     $("v-card").classList.toggle("hide", v !== "card");
-    $("nav").classList.toggle("hide", v === "setup");
+    $("v-rules").classList.toggle("hide", v !== "rules");
+    // the nav only makes sense once there's a round to navigate
+    $("nav").classList.toggle("hide", !state.started || v === "setup");
     $("navPlay").classList.toggle("on", v === "play");
     $("navCard").classList.toggle("on", v === "card");
+    $("navRules").classList.toggle("on", v === "rules");
+    $("rulesBack").textContent = backTo === "setup" ? "Back to Players" :
+      (backTo === "card" ? "Back to Scorecard" : "Back to Hole " + (state.hole + 1));
     window.scrollTo(0, 0);
     render();
   }
@@ -326,6 +463,7 @@
     if(view === "setup") renderSetup();
     if(view === "play") renderPlay();
     if(view === "card") renderCard();
+    // the rules screen is static — nothing to render
     renderSub();
   }
 
@@ -634,6 +772,9 @@
     save();
     show("play");
   });
+
+  $("setupRulesBtn").addEventListener("click", function(){ show("rules"); });
+  $("rulesBack").addEventListener("click", function(){ show(backTo); });
 
   $("prevHole").addEventListener("click", function(){ goHole(state.hole - 1); });
   $("nextHole").addEventListener("click", function(){ goHole(state.hole + 1); });
