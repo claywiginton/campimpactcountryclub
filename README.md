@@ -2,8 +2,11 @@
 
 A dead-simple scorekeeper for the 18-hole soccer golf course at Camp Impact.
 
-Open `index.html` — that's the whole app. No build step, no install, no network
-needed once the page is loaded. Works offline on a phone in the middle of a field.
+Open `index.html` — that's the whole app. One file, no build step, no install.
+Works on a phone in the middle of a field.
+
+**Hosted copy:** https://claude.ai/artifact/1TCSVFYNUVhuA77GpVHNu2 (private until
+it's shared from the page's Share menu).
 
 ## How it works
 
@@ -52,3 +55,14 @@ Editing a par down also pulls any already-entered score back under the new max.
 
 Any static host works. For GitHub Pages: Settings → Pages → deploy from this
 branch, root folder. Then bookmark the URL on everyone's phone.
+
+`make-artifact.py` builds the Claude-hosted copy from the same `index.html` by
+stripping the outer `<html>`/`<head>`/`<body>` wrapper, which that platform
+supplies itself:
+
+```
+python3 make-artifact.py artifact.html
+```
+
+Edit `index.html` only — the hosted page is generated from it, never edited
+separately.
