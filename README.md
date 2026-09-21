@@ -75,6 +75,10 @@ is gone.
   marks their card.
 - **Nothing tappable under 48px.** Score buttons are 58px tall; so are the hole
   arrows, the name field and the nav.
+- **One fixed score grid, six columns, on every hole.** A given number is always
+  the same size in the same place, whatever the par, so entering a score is
+  muscle memory rather than a fresh search each hole. A par 3 fills one row,
+  a par 4 or 5 wraps to a second.
 - **The banner is one 47px line** — flag mark, club name, nothing else — and
   only on the player screen. The whole title screen fits without scrolling;
   during play the screen belongs to the scoring.

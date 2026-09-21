@@ -183,7 +183,12 @@
   .pname{font-weight:700;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .ptot{font-size:15px;color:var(--ink-2);flex:none;font-variant-numeric:tabular-nums}
   .ptot b{color:var(--ink);font-size:17px}
-  .chips{display:grid;grid-template-columns:repeat(var(--cols,5),1fr);gap:7px}
+  .chips{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+  /* keep the 48px floor on narrow phones */
+  @media (max-width:374px){
+    .chips{gap:4px}
+    .pcard{padding:8px 8px 10px}
+  }
   .chip{
     height:58px;background:var(--surface-2);border:1.5px solid var(--line);color:var(--ink);
     font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;
@@ -734,8 +739,6 @@
       card.appendChild(head);
 
       var chips = el("div","chips");
-      // 6 for a par 3 (max 6), 4x2 for a par 4, 5x2 for a par 5 — no stragglers
-      chips.style.setProperty("--cols", max <= 6 ? max : Math.ceil(max / 2));
       for(var s=1; s<=max; s++){
         (function(val){
           var c = el("button","chip" + (val === par ? " par" : "") + (score === val ? " sel" : ""));
