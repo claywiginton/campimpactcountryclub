@@ -86,22 +86,39 @@
     margin:0;font-family:var(--ui);font-size:16px;line-height:1.45;
     background:var(--paper);color:var(--ink);-webkit-text-size-adjust:100%
   }
-  .wrap{max-width:560px;margin:0 auto;padding-inline:16px;padding-block:0 128px}
+  .wrap{max-width:560px;margin:0 auto;padding-inline:16px;padding-block:0 116px}
 
   /* ---------- masthead ---------- */
   header{
     background:var(--turf);color:var(--turf-ink);text-align:center;
-    padding:20px 16px 17px;border-bottom:1px solid rgba(201,163,95,.45)
+    padding:18px 16px 15px;border-bottom:1px solid rgba(201,163,95,.45)
   }
-  .seal{width:46px;height:46px;display:block;margin:0 auto 11px;color:var(--brass)}
+  .seal{width:42px;height:42px;display:block;margin:0 auto 10px;color:var(--brass);flex:none}
   header h1{
-    margin:0;font-family:var(--display);font-weight:700;font-size:25px;
+    margin:0;font-family:var(--display);font-weight:700;font-size:24px;
     letter-spacing:.055em;line-height:1.05;text-wrap:balance
   }
   header h1 span{
     display:block;margin-top:7px;font-family:var(--ui);font-size:10px;font-weight:600;
     letter-spacing:.36em;text-indent:.36em;text-transform:uppercase;opacity:.72
   }
+
+  /* Once a round is on, the full lockup is a title page nobody needs: the
+     masthead collapses to one line so the scoring fits above the fold. */
+  header.compact{
+    display:flex;align-items:center;justify-content:center;gap:9px;
+    padding:9px 16px;text-align:left
+  }
+  header.compact .seal{width:21px;height:21px;margin:0}
+  header.compact .seal circle:nth-of-type(2),
+  header.compact .seal path:last-of-type{display:none}
+  header.compact h1{
+    font-size:14px;letter-spacing:.06em;display:flex;align-items:baseline;gap:7px
+  }
+  header.compact h1 span{
+    display:inline;margin:0;font-size:8px;letter-spacing:.24em;text-indent:.24em;opacity:.58
+  }
+  header.compact .flagline{display:none}
   .flagline{
     display:flex;align-items:center;justify-content:center;gap:10px;margin-top:13px;
     font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--brass);
@@ -113,7 +130,7 @@
 
   /* ---------- section headings ---------- */
   h2{
-    display:flex;align-items:center;gap:13px;margin:27px 0 11px;
+    display:flex;align-items:center;gap:13px;margin:22px 0 10px;
     font-size:10px;text-transform:uppercase;letter-spacing:.22em;
     color:var(--ink-2);font-weight:600
   }
@@ -185,16 +202,21 @@
   }
 
   /* ---------- play: the tee plate ---------- */
-  .holebar{display:flex;align-items:stretch;gap:9px;margin:17px 0 13px}
+  /* Which hole and what par stays on screen while you scroll the players. */
+  .teestick{
+    position:sticky;top:env(safe-area-inset-top,0px);z-index:10;
+    background:var(--paper);padding:12px 16px;margin-inline:-16px
+  }
+  .holebar{display:flex;align-items:stretch;gap:9px;margin:0 0 10px}
   .arrow{
-    flex:none;width:50px;background:transparent;border:1px solid var(--rule);
+    flex:none;width:46px;background:var(--card);border:1px solid var(--rule);
     color:var(--green-ink);font-size:21px
   }
   .arrow:disabled{color:var(--rule);background:var(--card-2)}
   .holebox{
     flex:1;position:relative;background:var(--turf);color:var(--turf-ink);
-    border-radius:var(--r-sm);padding:11px 10px;text-align:center;min-height:74px;
-    display:flex;flex-direction:column;justify-content:center;gap:4px
+    border-radius:var(--r-sm);padding:9px 10px;text-align:center;min-height:64px;
+    display:flex;flex-direction:column;justify-content:center;gap:3px
   }
   .holebox::before{
     content:"";position:absolute;inset:4px;border:1px solid rgba(201,163,95,.4);
@@ -205,25 +227,25 @@
   }
   .holebox .h b{font-variant-numeric:tabular-nums;font-weight:600}
   .holebox .n{
-    font-family:var(--display);font-size:26px;font-weight:700;line-height:1;
+    font-family:var(--display);font-size:24px;font-weight:700;line-height:1;
     font-variant-numeric:tabular-nums;letter-spacing:.01em
   }
   .holebox .n em{
     font-style:normal;font-family:var(--ui);font-size:11px;font-weight:500;
     letter-spacing:.1em;text-transform:uppercase;opacity:.66
   }
-  .pbar{height:3px;background:var(--rule);overflow:hidden;margin-bottom:19px}
+  .pbar{height:3px;background:var(--rule);overflow:hidden}
   .pbar i{display:block;height:100%;background:var(--green);transition:width .25s ease}
 
   /* ---------- play: player cards ---------- */
   .pcard{
     background:var(--card);border:1px solid var(--rule);border-radius:var(--r);
-    padding:13px;margin-bottom:10px
+    padding:11px;margin-bottom:9px
   }
   .pcard.done{border-color:var(--green);background:var(--card-2)}
   .phead{
     display:flex;justify-content:space-between;align-items:baseline;gap:10px;
-    margin:0 1px 11px;padding-bottom:9px;border-bottom:1px solid var(--rule-soft)
+    margin:0 1px 9px;padding-bottom:8px;border-bottom:1px solid var(--rule-soft)
   }
   .pname{
     font-weight:600;font-size:16px;letter-spacing:.02em;
@@ -239,7 +261,7 @@
   }
   .chips{display:grid;grid-template-columns:repeat(var(--cols,5),1fr);gap:6px}
   .chip{
-    height:54px;background:transparent;border:1px solid var(--rule);color:var(--ink);
+    height:48px;background:transparent;border:1px solid var(--rule);color:var(--ink);
     font-size:19px;font-weight:600;font-variant-numeric:tabular-nums;
     display:flex;align-items:center;justify-content:center;flex-direction:column;
     line-height:1;gap:4px;transition:background .12s ease,color .12s ease
@@ -380,7 +402,7 @@
 </head>
 <body>
 
-<header>
+<header id="mast">
   <svg class="seal" viewBox="0 0 80 80" role="img" aria-label="Clubwappen">
     <circle cx="40" cy="40" r="37" fill="none" stroke="currentColor" stroke-width="1.2"></circle>
     <circle cx="40" cy="40" r="31" fill="none" stroke="currentColor" stroke-width="0.7"></circle>
@@ -425,15 +447,17 @@
 
   <!-- ============ PLAY ============ -->
   <section id="v-play" class="hide">
-    <div class="holebar">
-      <button class="arrow" id="prevHole">&#8249;</button>
-      <div class="holebox">
-        <div class="h">Loch <b id="holeNum">1</b> von 18</div>
-        <div class="n">Par <span id="holePar">3</span> <em id="holeMax"></em></div>
+    <div class="teestick">
+      <div class="holebar">
+        <button class="arrow" id="prevHole">&#8249;</button>
+        <div class="holebox">
+          <div class="h">Loch <b id="holeNum">1</b> von 18</div>
+          <div class="n">Par <span id="holePar">3</span> <em id="holeMax"></em></div>
+        </div>
+        <button class="arrow" id="nextHole">&#8250;</button>
       </div>
-      <button class="arrow" id="nextHole">&#8250;</button>
+      <div class="pbar"><i id="pbar" style="width:0%"></i></div>
     </div>
-    <div class="pbar"><i id="pbar" style="width:0%"></i></div>
     <div id="scoreCards"></div>
     <button class="btn" id="advanceBtn">N&auml;chstes Loch</button>
   </section>
@@ -697,6 +721,7 @@
     $("v-rules").classList.toggle("hide", v !== "rules");
     // the nav only makes sense once there's a round to navigate
     $("nav").classList.toggle("hide", !state.started || v === "setup");
+    $("mast").classList.toggle("compact", v !== "setup");
     $("navPlay").classList.toggle("on", v === "play");
     $("navCard").classList.toggle("on", v === "card");
     $("navRules").classList.toggle("on", v === "rules");
