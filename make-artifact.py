@@ -23,7 +23,9 @@ body = html[start:]
 for tag in ("</head>", "<body>", "</body>", "</html>"):
     body = body.replace(tag, "")
 
-# the skeleton already declares charset and viewport
+# the skeleton declares charset and viewport; the icon and manifest links point
+# at sibling files that only exist on the static host, so they go too
 body = re.sub(r'^\s*<meta[^>]*>\s*$\n?', '', body, flags=re.M)
+body = re.sub(r'^\s*<link rel="(icon|apple-touch-icon|manifest)"[^>]*>\s*$\n?', '', body, flags=re.M)
 out.write_text(body.strip() + "\n", encoding="utf-8")
 print(f"wrote {out} ({len(body.strip()):,} bytes)")

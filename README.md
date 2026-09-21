@@ -67,8 +67,18 @@ means editing `DEFAULT_PARS` in `index.html`.
 
 ## Hosting it
 
-Any static host works. For GitHub Pages: Settings → Pages → deploy from this
-branch, root folder. Then bookmark the URL on everyone's phone.
+**GitHub Pages** is the whole deployment story — the repo is public and
+`index.html` sits at the root, so there is nothing to build:
+
+> Settings → Pages → Source: **Deploy from a branch** → Branch:
+> `claude/sweet-goodall-o548qw` / `(root)` → Save
+
+That publishes to **https://claywiginton.github.io/campimpactcountryclub/**,
+usually within a minute. Every push to that branch redeploys automatically.
+
+The page ships an SVG favicon, an apple-touch-icon and a web manifest, so
+"Add to Home Screen" gives a proper standalone app with the club seal on it.
+Icons are generated from `icon.svg`; regenerate the PNGs if that changes.
 
 `make-artifact.py` builds the Claude-hosted copy from the same `index.html` by
 stripping the outer `<html>`/`<head>`/`<body>` wrapper, which that platform
