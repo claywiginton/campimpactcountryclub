@@ -161,14 +161,8 @@
     display:flex;justify-content:space-between;align-items:center;gap:10px;
     border-top:1px solid var(--line);padding-top:12px;margin-top:2px;font-size:14px;color:var(--muted)
   }
-  .coursefoot b{color:var(--ink);font-variant-numeric:tabular-nums}
-  .linkbtn{
-    background:none;border:0;padding:4px 2px;color:var(--accent-ink);font-size:14px;
-    font-weight:600;text-decoration:underline;text-underline-offset:3px
-  }
-  .pargrid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin:14px 0 4px}
-  .pargrid label{font-size:10px;color:var(--muted);text-align:center;display:block;letter-spacing:.05em}
-  .pargrid input{padding:8px 2px;text-align:center;font-size:16px;font-variant-numeric:tabular-nums}
+  .coursefoot b{color:var(--ink);font-variant-numeric:tabular-nums;font-weight:600}
+  .coursefoot .holes{font-variant-numeric:tabular-nums}
 
   /* ---------- play ---------- */
   .holebar{display:flex;align-items:stretch;gap:10px;margin:16px 0 12px}
@@ -321,14 +315,7 @@
       <div id="courseStrip"></div>
       <div class="coursefoot">
         <span>Total par <b id="parTotal">0</b></span>
-        <button class="linkbtn" id="editPars">Edit pars</button>
-      </div>
-      <div id="parEditor" class="hide">
-        <div class="pargrid" id="parGrid"></div>
-        <div class="coursefoot">
-          <span>Par for each hole</span>
-          <button class="linkbtn" id="resetPars">Reset to standard</button>
-        </div>
+        <span class="holes">18 holes</span>
       </div>
     </div>
 
@@ -494,7 +481,7 @@
 
   var state = {
     players: [],          // [{id, name}]
-    pars: DEFAULT_PARS.slice(),
+    pars: DEFAULT_PARS.slice(),   // fixed — the course doesn't change
     scores: {},           // { playerId: [18 slots, null = not played] }
     hole: 0,              // 0-based
     started: false
@@ -512,11 +499,16 @@
       if(!raw) return null;
       var s = JSON.parse(raw);
       if(!s || !Array.isArray(s.players)) return null;
-      if(!Array.isArray(s.pars) || s.pars.length !== HOLES) s.pars = DEFAULT_PARS.slice();
+      s.pars = DEFAULT_PARS.slice();   // always the real course, whatever was stored
       s.scores = s.scores || {};
       s.players.forEach(function(p){
         if(!Array.isArray(s.scores[p.id]) || s.scores[p.id].length !== HOLES){
           s.scores[p.id] = blankCard();
+        }
+        // guard against a stored round that was played against different pars
+        for(var h=0;h<HOLES;h++){
+          var v = s.scores[p.id][h], cap = s.pars[h] * 2;
+          if(v != null && v > cap) s.scores[p.id][h] = cap;
         }
       });
       s.hole = Math.min(Math.max(0, s.hole|0), HOLES-1);
@@ -652,45 +644,12 @@
       ? state.players.length + (state.players.length === 1 ? " player" : " players") + " · tap a name to edit"
       : "Add at least one player to tee off.";
 
-    renderParGrid();
+    renderCourse();
   }
 
-  function renderParGrid(){
-    var g = $("parGrid");
-    if(g.childElementCount !== HOLES){
-      g.innerHTML = "";
-      for(var i=0;i<HOLES;i++){
-        (function(h){
-          var box = el("div");
-          var lab = el("label", null, "H" + (h+1));
-          var inp = document.createElement("input");
-          inp.type = "number"; inp.min = "1"; inp.max = "9"; inp.inputMode = "numeric";
-          inp.dataset.hole = String(h);
-          inp.addEventListener("change", function(){
-            var v = parseInt(inp.value, 10);
-            if(isNaN(v) || v < 1) v = 1;
-            if(v > 9) v = 9;
-            state.pars[h] = v;
-            inp.value = v;
-            clampScores();
-            save();
-            $("parTotal").textContent = parTotal();
-            renderSub();
-          });
-          box.appendChild(lab); box.appendChild(inp);
-          g.appendChild(box);
-        })(i);
-      }
-    }
-    Array.prototype.forEach.call(g.querySelectorAll("input"), function(inp){
-      inp.value = state.pars[parseInt(inp.dataset.hole,10)];
-    });
+  // The course is fixed — this is a read-only front/back nine par strip.
+  function renderCourse(){
     $("parTotal").textContent = parTotal();
-    renderCourseStrip();
-  }
-
-  // Read-only front/back nine par strip shown on the setup screen.
-  function renderCourseStrip(){
     var wrap = $("courseStrip");
     wrap.innerHTML = "";
     [[0,"Out"],[9,"In"]].forEach(function(nine){
@@ -705,16 +664,6 @@
       br.appendChild(el("td","sum", String(parNine(start))));
       tbody.appendChild(br); tbl.appendChild(tbody);
       box.appendChild(tbl); wrap.appendChild(box);
-    });
-  }
-
-  // If a par shrinks, pull any score above the new max back down to it.
-  function clampScores(){
-    state.players.forEach(function(p){
-      var card = state.scores[p.id];
-      for(var h=0;h<HOLES;h++){
-        if(card[h] != null && card[h] > maxFor(h)) card[h] = maxFor(h);
-      }
     });
   }
 
@@ -915,16 +864,6 @@
   });
   $("newPlayer").addEventListener("blur", function(){
     if(addPlayer(this.value)){ this.value = ""; renderSetup(); }
-  });
-
-  $("editPars").addEventListener("click", function(){
-    var open = $("parEditor").classList.toggle("hide") === false;
-    this.textContent = open ? "Done" : "Edit pars";
-  });
-
-  $("resetPars").addEventListener("click", function(){
-    state.pars = DEFAULT_PARS.slice();
-    clampScores(); save(); renderParGrid(); renderSub();
   });
 
   $("startBtn").addEventListener("click", function(){

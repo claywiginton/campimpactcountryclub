@@ -11,7 +11,8 @@ it's shared from the page's Share menu).
 ## How it works
 
 1. **Who's playing** — type a name, hit enter, repeat. Tap a name to fix a typo,
-   `×` to remove someone. Then **Start Round**.
+   `×` to remove someone. The course and its pars are shown below the player
+   list. Then **Start Round**.
 2. **Play** — one hole at a time. The hole number, its par, and the max score are
    at the top; each player gets a row of tappable score buttons. Tap a number to
    record it, tap it again to clear it. **Next Hole** unlocks once everyone on the
@@ -48,8 +49,9 @@ Par for each hole is marked right on its score button, so nobody has to remember
 |------|---|---|---|---|---|---|---|---|---|-----|----|----|----|----|----|----|----|----|----|----|-------|
 | Par  | 4 | 4 | 3 | 4 | 4 | 4 | 4 | 5 | 5 | 37  | 3  | 4  | 5  | 3  | 4  | 5  | 3  | 3  | 5  | 35 | 72    |
 
-Pars are editable — open **Course pars** on the first screen if a hole gets moved.
-Editing a par down also pulls any already-entered score back under the new max.
+The course is fixed: pars are built into the app and can't be changed from the
+scorecard, so every round is scored against the same 72. Changing the course
+means editing `DEFAULT_PARS` in `index.html`.
 
 ## Hosting it
 
