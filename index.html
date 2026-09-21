@@ -81,12 +81,14 @@
   }
   .wrap{max-width:560px;margin:0 auto;padding-inline:16px;padding-block:0 104px}
 
-  /* ---------- title screen only ---------- */
-  header{background:var(--head);color:#fff;text-align:center;padding:20px 16px 18px}
-  .seal{width:38px;height:38px;display:block;margin:0 auto 10px;color:#c9a35f}
-  header h1{margin:0;font-size:22px;font-weight:700;line-height:1.2}
-  header h1 span{display:block;margin-top:2px;font-size:13px;font-weight:500;opacity:.8}
-  .flagline{margin-top:10px;font-size:14px;opacity:.8;font-variant-numeric:tabular-nums}
+  /* ---------- title screen only: one line, then out of the way ---------- */
+  header{
+    background:var(--head);color:#fff;display:flex;align-items:center;
+    justify-content:center;gap:9px;padding:13px 16px
+  }
+  .seal{width:21px;height:21px;flex:none;color:#c9a35f}
+  header h1{margin:0;font-size:17px;font-weight:600;line-height:1.2}
+  header h1 span{font-weight:400;opacity:.72}
 
   h2{
     margin:22px 0 9px;font-size:15px;font-weight:700;color:var(--ink-2)
@@ -282,16 +284,12 @@
 <body>
 
 <header id="mast">
-  <svg class="seal" viewBox="0 0 80 80" role="img" aria-label="Clubwappen">
-    <circle cx="40" cy="40" r="37" fill="none" stroke="currentColor" stroke-width="1.2"></circle>
-    <circle cx="40" cy="40" r="31" fill="none" stroke="currentColor" stroke-width="0.7"></circle>
-    <path d="M 35 55 V 23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"></path>
-    <path d="M 35 23 L 55 28.5 L 35 34 Z" fill="currentColor"></path>
-    <circle cx="46" cy="51" r="4.2" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
-    <path d="M 24 56 H 56" stroke="currentColor" stroke-width="1" stroke-linecap="round"></path>
+  <svg class="seal" viewBox="0 0 80 80" role="img" aria-label="Fu&szlig;ballgolf">
+    <path d="M 30 70 V 12" stroke="currentColor" stroke-width="6" stroke-linecap="round" fill="none"></path>
+    <path d="M 30 12 L 68 24 L 30 36 Z" fill="currentColor"></path>
+    <circle cx="52" cy="60" r="10" fill="none" stroke="currentColor" stroke-width="5.5"></circle>
   </svg>
-  <h1>Camp Impact<span>Country Club</span></h1>
-  <div class="flagline" id="sub">Fu&szlig;ballgolf &middot; 18 L&ouml;cher</div>
+  <h1>Camp Impact <span>Country Club</span></h1>
 </header>
 
 <div class="wrap">
@@ -637,16 +635,6 @@
     if(view === "play") renderPlay();
     if(view === "card") renderCard();
     // the rules screen is static — nothing to render
-    renderSub();
-  }
-
-  function renderSub(){
-    var sub = $("sub");
-    if(state.started && state.players.length){
-      sub.textContent = "Fußballgolf · 18 Löcher · Par " + parTotal();
-    } else {
-      sub.textContent = "Fußballgolf · 18 Löcher";
-    }
   }
 
   /* ---------------- setup ---------------- */

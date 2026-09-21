@@ -75,8 +75,9 @@ is gone.
   marks their card.
 - **Nothing tappable under 48px.** Score buttons are 58px tall; so are the hole
   arrows, the name field and the nav.
-- **The masthead only appears on the player screen.** During play the screen
-  belongs to the scoring.
+- **The banner is one 47px line** — flag mark, club name, nothing else — and
+  only on the player screen. The whole title screen fits without scrolling;
+  during play the screen belongs to the scoring.
 - **Hole and par stay pinned** to the top while you scroll the players.
 - **The screen stays awake** while the play screen is open, so the phone does
   not lock between holes.

@@ -8,7 +8,7 @@
  *
  * Bump CACHE when the shell changes and you want old copies purged.
  */
-var CACHE = "cicc-2026-09-21";
+var CACHE = "cicc-2026-09-21b";
 var SHELL = [
   "./",
   "./index.html",
