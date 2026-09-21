@@ -126,6 +126,8 @@
   }
   .empty{color:var(--ink-2);text-align:center;padding:10px 0;margin:0}
   .note{font-size:15px;color:var(--ink-2);text-align:center;margin:12px 0 0}
+  .note.warn{color:var(--red);font-weight:600}
+  .pcard.missing{border-color:var(--red);background:var(--surface-2)}
 
   /* ---------- course strip ---------- */
   .nine{margin-bottom:10px}
@@ -314,7 +316,7 @@
       </div>
     </div>
 
-    <button class="btn" id="startBtn" disabled>Runde starten</button>
+    <button class="btn" id="startBtn">Runde starten</button>
     <button class="btn ghost" id="setupRulesBtn" style="margin-top:10px">Regeln lesen</button>
     <div id="resumeWrap" class="hide" style="margin-top:10px">
       <button class="btn ghost" id="resumeBtn">Laufende Runde fortsetzen</button>
@@ -675,7 +677,7 @@
       list.appendChild(row);
     });
 
-    $("startBtn").disabled = state.players.length === 0;
+    $("setupNote").classList.remove("warn");
     $("setupNote").textContent = state.players.length
       ? state.players.length + " Spieler · Namen antippen zum Ändern"
       : "Mindestens ein Spieler zum Abschlag.";
@@ -772,7 +774,6 @@
       btn.disabled = false;
     } else {
       btn.textContent = done ? "Nächstes Loch" : "Alle Ergebnisse eintragen";
-      btn.disabled = !done;
     }
   }
 
@@ -908,7 +909,15 @@
   $("startBtn").addEventListener("click", function(){
     // sweep out any blank names typed into existing rows
     state.players = state.players.filter(function(p){ return p.name.trim() !== ""; });
-    if(!state.players.length){ renderSetup(); return; }
+    if(!state.players.length){
+      save();
+      renderSetup();
+      var note = $("setupNote");
+      note.textContent = "Bitte zuerst mindestens einen Spieler eintragen.";
+      note.classList.add("warn");
+      $("newPlayer").focus();
+      return;
+    }
     state.started = true;
     state.hole = firstUnfinishedHole();
     save();
@@ -928,9 +937,25 @@
   $("nextHole").addEventListener("click", function(){ goHole(state.hole + 1); });
 
   $("advanceBtn").addEventListener("click", function(){
-    if(state.hole === HOLES - 1) show("card");
-    else goHole(state.hole + 1);
+    if(state.hole === HOLES - 1){ show("card"); return; }
+    if(!holeComplete(state.hole)){ flagMissing(); return; }
+    goHole(state.hole + 1);
   });
+
+  // Point at whoever still needs a score, rather than just refusing to advance.
+  function flagMissing(){
+    var cards = $("scoreCards").children, first = null;
+    state.players.forEach(function(p, i){
+      if(state.scores[p.id][state.hole] == null){
+        cards[i].classList.add("missing");
+        if(!first) first = cards[i];
+      }
+    });
+    if(first) first.scrollIntoView({ block: "center", behavior: "smooth" });
+    setTimeout(function(){
+      for(var i=0;i<cards.length;i++) cards[i].classList.remove("missing");
+    }, 1800);
+  }
 
   Array.prototype.forEach.call(document.querySelectorAll("nav button"), function(b){
     b.addEventListener("click", function(){ show(b.dataset.view); });
@@ -975,5 +1000,15 @@
   }
 })();
 </script>
+<!-- offline:start -->
+<script>
+  /* Caches the app on first visit so later launches need no connection. */
+  if("serviceWorker" in navigator){
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("sw.js").catch(function(){});
+    });
+  }
+</script>
+<!-- offline:end -->
 </body>
 </html>

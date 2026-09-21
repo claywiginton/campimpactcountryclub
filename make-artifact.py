@@ -27,5 +27,8 @@ for tag in ("</head>", "<body>", "</body>", "</html>"):
 # at sibling files that only exist on the static host, so they go too
 body = re.sub(r'^\s*<meta[^>]*>\s*$\n?', '', body, flags=re.M)
 body = re.sub(r'^\s*<link rel="(icon|apple-touch-icon|manifest)"[^>]*>\s*$\n?', '', body, flags=re.M)
+
+# the service worker caches sibling files that only exist on the static host
+body = re.sub(r'<!-- offline:start -->.*?<!-- offline:end -->\n?', '', body, flags=re.S)
 out.write_text(body.strip() + "\n", encoding="utf-8")
 print(f"wrote {out} ({len(body.strip()):,} bytes)")

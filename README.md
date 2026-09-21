@@ -30,6 +30,19 @@ https://claude.ai/artifact/1TCSVFYNUVhuA77GpVHNu2, built by `make-artifact.py`.
 Scores save to the browser automatically, so closing the tab or locking the phone
 doesn't lose the round. Reopening drops you back on the first unfinished hole.
 
+## Offline
+
+A service worker (`sw.js`) caches the whole app on the first visit, so after
+that it opens **with no connection at all** — the page, the icons and the
+manifest all come from the phone. The scorecard makes no external requests of
+any kind, so once it has loaded once, signal stops mattering for the rest of
+the round.
+
+The cache is served first and refreshed in the background, so a newly deployed
+version appears on the launch *after* the one that downloaded it. That is the
+right trade for a field: never a spinner, at the cost of being one launch
+behind. Bump `CACHE` in `sw.js` to purge old copies.
+
 ## The rules
 
 Written out in full on the **Regeln** screen in the app. In brief:
@@ -54,8 +67,12 @@ Tuned for one hand, in daylight, on a phone — everything that did not serve th
 is gone.
 
 - **No downloaded fonts.** The system font stack renders instantly and the page
-  makes *zero* network requests, so it works with no signal in the middle of a
-  field. Nothing to download means nothing to fail.
+  makes *zero* network requests. Together with the service worker, that means
+  the round never touches the network at all.
+- **No dead-end buttons.** Tapping *Runde starten* with nobody entered says so
+  and focuses the name field, instead of a greyed-out button that ignores you;
+  tapping *Nächstes Loch* with a score missing scrolls to that player and
+  marks their card.
 - **Nothing tappable under 48px.** Score buttons are 58px tall; so are the hole
   arrows, the name field and the nav.
 - **The masthead only appears on the player screen.** During play the screen
