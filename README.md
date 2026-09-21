@@ -1,6 +1,9 @@
 # Camp Impact Country Club
 
-A dead-simple scorekeeper for the 18-hole soccer golf course at Camp Impact.
+A scorekeeper for the 18-hole Fußballgolf course at Camp Impact.
+
+**The interface is entirely in German** — the players are, so the app is. This
+README stays in English for whoever maintains it.
 
 Open `index.html` — that's the whole app. One file, no build step, no install.
 Works on a phone in the middle of a field.
@@ -10,24 +13,25 @@ it's shared from the page's Share menu).
 
 ## How it works
 
-1. **Who's playing** — type a name, hit enter, repeat. Tap a name to fix a typo,
-   `×` to remove someone. The course and its pars are shown below the player
-   list. Then **Start Round**.
-2. **Play** — one hole at a time. The hole number, its par, and the max score are
-   at the top; each player gets a row of tappable score buttons. Tap a number to
-   record it, tap it again to clear it. **Next Hole** unlocks once everyone on the
-   hole has a score. The `‹` `›` arrows jump back and forth freely.
-3. **Scorecard** — live leaderboard (sorted by score to par) plus the full grid
-   with OUT / IN / total. Tap any cell to jump back to that hole and fix it.
-4. **Rules** — the full house rules, always one tap away from the bottom nav (and
-   from a button on the first screen, for the pre-round briefing).
+1. **Wer spielt mit?** — type a name, hit enter, repeat. Tap a name to fix a
+   typo, `×` to remove someone. The course and its pars sit below the roster.
+   Then **Runde starten**.
+2. **Spielen** — one hole at a time. Hole number, par and the maximum are on the
+   tee plate at the top; each player gets a row of tappable score buttons. Tap a
+   number to record it, tap it again to clear it. **Nächstes Loch** unlocks once
+   everyone on the hole has a score. The `‹` `›` arrows move freely.
+3. **Scorekarte** — a tournament board sorted by score to par, plus the printed
+   card with Hin / Rück / Gesamt. Scores under par are circled, double bogey or
+   worse is boxed, as on a paper card. Tap any cell to jump back and fix it.
+4. **Regeln** — the full Platzregeln, one tap away from the bottom nav and from a
+   button on the first screen for the pre-round briefing.
 
 Scores save to the browser automatically, so closing the tab or locking the phone
 doesn't lose the round. Reopening drops you back on the first unfinished hole.
 
 ## The rules
 
-Written out in full on the **Rules** screen in the app. In brief:
+Written out in full on the **Regeln** screen in the app. In brief:
 
 - **Tee off within 1 meter** of the yellow tee marker.
 - **Finishing a hole** — agree on a mode before hole 1. *Easy:* hit the tire.
@@ -42,6 +46,14 @@ Written out in full on the **Rules** screen in the app. In brief:
   buttons stop at double par, with the last one marked `MAX`.
 
 Par for each hole is marked right on its score button, so nobody has to remember it.
+
+## Design
+
+Deep turf green and brass on card stock, hairline rules instead of drop shadows.
+Bodoni Moda carries the club identity and the hole numbers, Archivo the
+interface, Archivo Narrow the scorecard grid. The masthead and the leaderboard
+are the only two dark surfaces, so the board reads as the board. Light and dark
+themes are both defined at token level; the masthead stays turf either way.
 
 ## The course
 

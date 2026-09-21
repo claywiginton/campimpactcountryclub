@@ -9,281 +9,370 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&family=Archivo+Narrow:wght@600;700&family=Bodoni+Moda:opsz,wght@6..96,700&display=swap">
 <style>
-  /* ---------- tokens ---------- */
+  /* ============================================================
+     Camp Impact Country Club — printed-scorecard visual system.
+     Hairline rules and card stock, not drop shadows; the masthead
+     and the leaderboard are the only two dark "board" surfaces.
+     ============================================================ */
   :root{
-    --ground:#eff3ef;
-    --surface:#ffffff;
-    --surface-2:#f6faf6;
-    --line:#d9e3db;
-    --line-soft:#e8efe9;
-    --ink:#16201a;
-    --muted:#5f7167;
-    --accent:#2e7d4f;
-    --accent-press:#276a43;
-    --on-accent:#ffffff;
-    --accent-soft:#deeee4;
-    --accent-ink:#1b5334;
-    --header:#143d29;
-    --on-header:#eef4ee;
-    --flag:#b3301f;
-    --warn-bg:#fbf5e6;
-    --warn-line:#e7d7ac;
-    --warn-ink:#87601a;
-    --shadow:0 1px 2px rgba(20,61,41,.07);
+    --paper:#e8ebe4;
+    --card:#fbfaf7;
+    --card-2:#f2f2eb;
+    --rule:#d3dacf;
+    --rule-soft:#e4e8e0;
+    --ink:#15211a;
+    --ink-2:#5a6a60;
+    --green:#2e7a4d;
+    --green-press:#26653f;
+    --green-ink:#1a5133;
+    --green-tint:#e1ebe2;
+    --claret:#a32519;
+    --on-green:#ffffff;
 
-    --r:14px;
+    /* board + metal hold across themes: the masthead is always deep turf */
+    --turf:#0f3b26;
+    --turf-ink:#f1f5ee;
+    --brass:#c9a35f;
+    --brass-deep:#9b7d3d;
+    --board-red:#ff7c68;
+
+    --r:4px;
+    --r-sm:3px;
     --display:"Bodoni Moda",Georgia,"Times New Roman",serif;
     --ui:"Archivo",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     --cond:"Archivo Narrow","Archivo",-apple-system,BlinkMacSystemFont,sans-serif;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-    --ground:#0d1310;
-    --surface:#171f1a;
-    --surface-2:#1e2822;
-    --line:#2c372f;
-    --line-soft:#232e27;
-    --ink:#e7eee8;
-    --muted:#93a699;
-    --accent:#42a266;
-    --accent-press:#4fb374;
-    --on-accent:#06140c;
-    --accent-soft:#1b3326;
-    --accent-ink:#8fd6a7;
-    --header:#10281b;
-    --on-header:#e7eee8;
-    --flag:#e8705c;
-    --warn-bg:#241f14;
-    --warn-line:#473c22;
-    --warn-ink:#dcc084;
-    --shadow:0 1px 2px rgba(0,0,0,.4);
+    --paper:#0c110e;
+    --card:#141a16;
+    --card-2:#1b221d;
+    --rule:#2a332c;
+    --rule-soft:#222a24;
+    --ink:#e8eee9;
+    --ink-2:#93a397;
+    --green:#3f9e63;
+    --green-press:#4db072;
+    --green-ink:#8fd6a7;
+    --green-tint:#1a3125;
+    --claret:#e8796a;
+    --on-green:#06140c;
     }
   }
   :root[data-theme="dark"]{
-    --ground:#0d1310;
-    --surface:#171f1a;
-    --surface-2:#1e2822;
-    --line:#2c372f;
-    --line-soft:#232e27;
-    --ink:#e7eee8;
-    --muted:#93a699;
-    --accent:#42a266;
-    --accent-press:#4fb374;
-    --on-accent:#06140c;
-    --accent-soft:#1b3326;
-    --accent-ink:#8fd6a7;
-    --header:#10281b;
-    --on-header:#e7eee8;
-    --flag:#e8705c;
-    --warn-bg:#241f14;
-    --warn-line:#473c22;
-    --warn-ink:#dcc084;
-    --shadow:0 1px 2px rgba(0,0,0,.4);
+    --paper:#0c110e;
+    --card:#141a16;
+    --card-2:#1b221d;
+    --rule:#2a332c;
+    --rule-soft:#222a24;
+    --ink:#e8eee9;
+    --ink-2:#93a397;
+    --green:#3f9e63;
+    --green-press:#4db072;
+    --green-ink:#8fd6a7;
+    --green-tint:#1a3125;
+    --claret:#e8796a;
+    --on-green:#06140c;
   }
 
   /* ---------- base ---------- */
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  /* run edge to edge, but clear the phone's notch and home indicator */
-  html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+  /* edge to edge, but clear the notch; the turf ground continues the masthead */
+  html{
+    padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+    background:var(--turf)
+  }
   body{
     margin:0;font-family:var(--ui);font-size:16px;line-height:1.45;
-    background:var(--ground);color:var(--ink);
-    -webkit-text-size-adjust:100%;
+    background:var(--paper);color:var(--ink);-webkit-text-size-adjust:100%
   }
-  .wrap{max-width:560px;margin:0 auto;padding-inline:16px;padding-block:0 132px}
-  header{background:var(--header);color:var(--on-header);padding:18px 16px 16px;text-align:center}
+  .wrap{max-width:560px;margin:0 auto;padding-inline:16px;padding-block:0 128px}
+
+  /* ---------- masthead ---------- */
+  header{
+    background:var(--turf);color:var(--turf-ink);text-align:center;
+    padding:20px 16px 17px;border-bottom:1px solid rgba(201,163,95,.45)
+  }
+  .seal{width:46px;height:46px;display:block;margin:0 auto 11px;color:var(--brass)}
   header h1{
-    margin:0;font-family:var(--display);font-weight:700;font-size:21px;
-    letter-spacing:.07em;text-transform:uppercase;line-height:1.15;text-wrap:balance
+    margin:0;font-family:var(--display);font-weight:700;font-size:25px;
+    letter-spacing:.055em;line-height:1.05;text-wrap:balance
   }
-  header .flagline{
-    display:flex;align-items:center;justify-content:center;gap:9px;
-    margin-top:7px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.72
+  header h1 span{
+    display:block;margin-top:7px;font-family:var(--ui);font-size:10px;font-weight:600;
+    letter-spacing:.36em;text-indent:.36em;text-transform:uppercase;opacity:.72
   }
-  header .flagline::before,header .flagline::after{
-    content:"";height:1px;width:26px;background:currentColor;opacity:.5
+  .flagline{
+    display:flex;align-items:center;justify-content:center;gap:10px;margin-top:13px;
+    font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--brass);
+    font-variant-numeric:tabular-nums
   }
+  .flagline::before,.flagline::after{
+    content:"";height:1px;width:22px;background:currentColor;opacity:.55
+  }
+
+  /* ---------- section headings ---------- */
   h2{
-    font-size:12px;text-transform:uppercase;letter-spacing:.16em;color:var(--muted);
-    font-weight:600;margin:26px 0 10px
+    display:flex;align-items:center;gap:13px;margin:27px 0 11px;
+    font-size:10px;text-transform:uppercase;letter-spacing:.22em;
+    color:var(--ink-2);font-weight:600
   }
+  h2::after{content:"";flex:1;height:1px;background:var(--rule)}
+
   .card{
-    background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
-    padding:16px;margin-bottom:12px;box-shadow:var(--shadow)
+    background:var(--card);border:1px solid var(--rule);border-radius:var(--r);
+    padding:16px;margin-bottom:12px
   }
   .stack{display:flex;flex-direction:column;gap:10px}
 
   /* ---------- controls ---------- */
-  button{font-family:inherit;font-size:16px;cursor:pointer;border:none;border-radius:11px;color:var(--ink)}
-  :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  button{font-family:inherit;font-size:16px;cursor:pointer;border:none;border-radius:var(--r-sm);color:var(--ink)}
+  :focus-visible{outline:2px solid var(--green);outline-offset:2px}
   .btn{
-    display:block;width:100%;padding:17px 14px;background:var(--accent);color:var(--on-accent);
-    font-weight:600;font-size:17px;letter-spacing:.02em
+    display:block;width:100%;padding:17px 14px;background:var(--green);color:var(--on-green);
+    font-size:13px;font-weight:600;letter-spacing:.16em;text-transform:uppercase
   }
-  .btn:active{background:var(--accent-press)}
-  .btn:disabled{background:var(--line-soft);color:var(--muted);cursor:not-allowed}
-  .btn.ghost{background:var(--surface);color:var(--accent-ink);border:1.5px solid var(--line)}
-  .btn.danger{background:var(--surface);color:var(--flag);border:1.5px solid var(--line)}
-  input[type=text],input[type=number]{
-    font-family:inherit;font-size:16px;padding:13px 12px;border:1px solid var(--line);
-    border-radius:11px;width:100%;background:var(--surface);color:var(--ink)
+  .btn:active{background:var(--green-press)}
+  .btn:disabled{background:var(--card-2);color:var(--ink-2);border:1px solid var(--rule);cursor:not-allowed}
+  .btn.ghost{background:var(--card);color:var(--green-ink);border:1px solid var(--rule)}
+  .btn.danger{background:var(--card);color:var(--claret);border:1px solid var(--rule)}
+  input[type=text]{
+    font-family:inherit;font-size:16px;padding:13px 12px;border:1px solid var(--rule);
+    border-radius:var(--r-sm);width:100%;background:var(--card);color:var(--ink)
   }
-  input::placeholder{color:var(--muted);opacity:.8}
+  input::placeholder{color:var(--ink-2);opacity:.75}
 
-  /* ---------- setup ---------- */
-  .prow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  /* ---------- roster ---------- */
+  .prow{display:flex;gap:9px;align-items:center;margin-bottom:8px}
   .prow .num{
-    width:24px;text-align:center;color:var(--muted);font-weight:600;flex:none;
-    font-variant-numeric:tabular-nums;font-size:14px
+    width:22px;text-align:center;color:var(--brass-deep);flex:none;
+    font-family:var(--display);font-weight:700;font-size:15px;font-variant-numeric:tabular-nums
   }
   .prow .x{
-    flex:none;width:44px;height:46px;background:var(--surface);border:1px solid var(--line);
-    color:var(--muted);font-size:19px;line-height:1
+    flex:none;width:44px;height:46px;background:transparent;border:1px solid var(--rule);
+    color:var(--ink-2);font-size:18px;line-height:1
   }
-  .empty{color:var(--muted);font-size:15px;text-align:center;padding:12px 0;margin:0}
-  .note{font-size:13px;color:var(--muted);text-align:center;margin:12px 0 0}
+  .empty{color:var(--ink-2);font-size:15px;text-align:center;padding:12px 0;margin:0}
+  .note{font-size:13px;color:var(--ink-2);text-align:center;margin:13px 0 0}
 
-  /* course strip */
-  .nine{margin-bottom:10px}
+  /* ---------- course strip ---------- */
+  .nine{margin-bottom:11px}
   .nine table{
     width:100%;border-collapse:collapse;font-family:var(--cond);
     font-variant-numeric:tabular-nums;table-layout:fixed
   }
   .nine th,.nine td{padding:5px 1px;text-align:center;font-size:13px;border:0}
   .nine thead th{
-    font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.04em;
-    border-bottom:1px solid var(--line)
+    font-size:10px;font-weight:600;color:var(--ink-2);letter-spacing:.03em;
+    border-bottom:1px solid var(--rule)
   }
   .nine tbody td{font-weight:700;color:var(--ink);padding-top:7px}
-  .nine .sum{color:var(--accent-ink);background:var(--accent-soft)}
-  .nine thead .sum{color:var(--accent-ink)}
+  .nine .sum{
+    color:var(--green-ink);background:var(--green-tint);
+    border-left:1px solid var(--rule);font-size:10px;letter-spacing:.02em
+  }
+  /* the subtotal column carries a word, not a digit — give it room */
+  .nine th:last-child,.nine td:last-child{width:15%}
+  .nine tbody .sum{font-size:13px}
   .coursefoot{
-    display:flex;justify-content:space-between;align-items:center;gap:10px;
-    border-top:1px solid var(--line);padding-top:12px;margin-top:2px;font-size:14px;color:var(--muted)
+    display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+    border-top:1px solid var(--rule);padding-top:13px;margin-top:3px;
+    font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)
   }
-  .coursefoot b{color:var(--ink);font-variant-numeric:tabular-nums;font-weight:600}
-  .coursefoot .holes{font-variant-numeric:tabular-nums}
+  .coursefoot b{
+    font-family:var(--display);font-size:17px;font-weight:700;color:var(--ink);
+    letter-spacing:0;font-variant-numeric:tabular-nums;margin-left:5px
+  }
 
-  /* ---------- play ---------- */
-  .holebar{display:flex;align-items:stretch;gap:10px;margin:16px 0 12px}
+  /* ---------- play: the tee plate ---------- */
+  .holebar{display:flex;align-items:stretch;gap:9px;margin:17px 0 13px}
   .arrow{
-    flex:none;width:52px;background:var(--surface);border:1px solid var(--line);
-    color:var(--accent-ink);font-size:23px;font-weight:600
+    flex:none;width:50px;background:transparent;border:1px solid var(--rule);
+    color:var(--green-ink);font-size:21px
   }
-  .arrow:disabled{color:var(--line);background:var(--surface-2)}
+  .arrow:disabled{color:var(--rule);background:var(--card-2)}
   .holebox{
-    flex:1;background:var(--header);color:var(--on-header);border-radius:var(--r);
-    padding:10px;text-align:center;min-height:70px;
-    display:flex;flex-direction:column;justify-content:center;gap:3px
+    flex:1;position:relative;background:var(--turf);color:var(--turf-ink);
+    border-radius:var(--r-sm);padding:11px 10px;text-align:center;min-height:74px;
+    display:flex;flex-direction:column;justify-content:center;gap:4px
   }
-  .holebox .h{font-size:10px;letter-spacing:.18em;text-transform:uppercase;opacity:.72}
+  .holebox::before{
+    content:"";position:absolute;inset:4px;border:1px solid rgba(201,163,95,.4);
+    border-radius:1px;pointer-events:none
+  }
+  .holebox .h{
+    font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--brass)
+  }
   .holebox .h b{font-variant-numeric:tabular-nums;font-weight:600}
   .holebox .n{
-    font-family:var(--display);font-size:25px;font-weight:700;line-height:1.05;
-    font-variant-numeric:tabular-nums
+    font-family:var(--display);font-size:26px;font-weight:700;line-height:1;
+    font-variant-numeric:tabular-nums;letter-spacing:.01em
   }
-  .holebox .n em{font-style:normal;font-family:var(--ui);font-size:13px;font-weight:500;opacity:.75}
-  .pbar{height:5px;background:var(--line-soft);border-radius:99px;overflow:hidden;margin-bottom:18px}
-  .pbar i{display:block;height:100%;background:var(--accent);transition:width .25s ease}
+  .holebox .n em{
+    font-style:normal;font-family:var(--ui);font-size:11px;font-weight:500;
+    letter-spacing:.1em;text-transform:uppercase;opacity:.66
+  }
+  .pbar{height:3px;background:var(--rule);overflow:hidden;margin-bottom:19px}
+  .pbar i{display:block;height:100%;background:var(--green);transition:width .25s ease}
 
+  /* ---------- play: player cards ---------- */
   .pcard{
-    background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
-    padding:13px;margin-bottom:10px;box-shadow:var(--shadow)
+    background:var(--card);border:1px solid var(--rule);border-radius:var(--r);
+    padding:13px;margin-bottom:10px
   }
-  .pcard.done{border-color:var(--accent);background:var(--surface-2)}
-  .phead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:11px}
-  .pname{font-weight:600;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .ptot{font-size:13px;color:var(--muted);flex:none;font-variant-numeric:tabular-nums}
-  .ptot b{color:var(--ink);font-weight:600}
-  .chips{display:grid;grid-template-columns:repeat(var(--cols,5),1fr);gap:7px}
-  .chip{
-    height:54px;background:var(--surface);border:1px solid var(--line);color:var(--ink);
-    font-size:19px;font-weight:600;font-variant-numeric:tabular-nums;
-    display:flex;align-items:center;justify-content:center;flex-direction:column;
-    line-height:1;gap:3px
+  .pcard.done{border-color:var(--green);background:var(--card-2)}
+  .phead{
+    display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+    margin:0 1px 11px;padding-bottom:9px;border-bottom:1px solid var(--rule-soft)
   }
-  .chip small{font-size:8px;font-weight:700;letter-spacing:.09em;color:var(--muted)}
-  .chip.par{border-color:var(--accent);color:var(--accent-ink)}
-  .chip.par small{color:var(--accent-ink)}
-  .chip.sel{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
-  .chip.sel small{color:var(--on-accent);opacity:.8}
-
-  /* ---------- leaderboard + scorecard ---------- */
-  table{width:100%;border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums}
-  th,td{padding:10px 6px;text-align:center;border-bottom:1px solid var(--line-soft)}
-  tr:last-child td{border-bottom:0}
-  th{
-    font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);
-    font-weight:600;border-bottom:1px solid var(--line)
-  }
-  td.name,th.name{
-    text-align:left;font-weight:600;max-width:124px;
+  .pname{
+    font-weight:600;font-size:16px;letter-spacing:.02em;
     overflow:hidden;text-overflow:ellipsis;white-space:nowrap
   }
-  .pos{color:var(--muted);font-size:13px;width:22px}
-  .under{color:var(--flag);font-weight:700}
-  .even{color:var(--accent-ink);font-weight:700}
-  .tot{font-weight:700}
-  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .scroll table{min-width:640px;font-family:var(--cond)}
-  .scroll th,.scroll td{padding:9px 4px}
-  .scroll td.name,.scroll th.name{
-    position:sticky;left:0;background:var(--surface);z-index:1;
-    font-family:var(--ui);font-size:14px;padding-right:10px
+  .ptot{
+    font-size:11px;color:var(--ink-2);flex:none;letter-spacing:.1em;
+    text-transform:uppercase;font-variant-numeric:tabular-nums
   }
-  .scroll th.name{font-size:10px}
-  .scroll tr.parrow td{background:var(--accent-soft);font-weight:700;color:var(--accent-ink)}
-  td.cur{box-shadow:inset 0 0 0 2px var(--accent)}
+  .ptot b{
+    font-family:var(--display);font-size:16px;color:var(--ink);
+    font-weight:700;letter-spacing:0;margin-right:3px
+  }
+  .chips{display:grid;grid-template-columns:repeat(var(--cols,5),1fr);gap:6px}
+  .chip{
+    height:54px;background:transparent;border:1px solid var(--rule);color:var(--ink);
+    font-size:19px;font-weight:600;font-variant-numeric:tabular-nums;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    line-height:1;gap:4px;transition:background .12s ease,color .12s ease
+  }
+  .chip small{font-size:8px;font-weight:600;letter-spacing:.14em;color:var(--ink-2)}
+  .chip.par{border-color:var(--green);color:var(--green-ink)}
+  .chip.par small{color:var(--green-ink)}
+  .chip.sel{background:var(--green);border-color:var(--green);color:var(--on-green)}
+  .chip.sel small{color:var(--on-green);opacity:.78}
+
+  /* ---------- the board ---------- */
+  .board{
+    background:var(--turf);border:1px solid rgba(201,163,95,.3);border-radius:var(--r);
+    padding:4px 14px 8px;margin-bottom:12px
+  }
+  .board table{width:100%;border-collapse:collapse;color:var(--turf-ink);font-variant-numeric:tabular-nums}
+  .board th{
+    font-size:9px;text-transform:uppercase;letter-spacing:.18em;font-weight:600;
+    color:var(--brass);padding:11px 5px 9px;border-bottom:1px solid rgba(201,163,95,.3);text-align:center
+  }
+  .board td{padding:12px 5px;text-align:center;border-bottom:1px solid rgba(241,245,238,.09);font-size:15px}
+  .board tr:last-child td{border-bottom:0}
+  .board th.name,.board td.name{text-align:left;font-weight:600;letter-spacing:.02em}
+  .board td.name{max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .board .pos{
+    width:26px;font-family:var(--display);font-size:15px;font-weight:700;color:var(--brass)
+  }
+  .board .tot{font-family:var(--display);font-size:19px;font-weight:700}
+  .board .under{color:var(--board-red);font-weight:600}
+  .board .even{color:var(--brass);font-weight:600}
+  .board .idle{color:rgba(241,245,238,.35)}
+
+  /* ---------- printed scorecard ---------- */
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .scroll table{
+    width:100%;min-width:660px;border-collapse:collapse;
+    font-family:var(--cond);font-variant-numeric:tabular-nums
+  }
+  .scroll th,.scroll td{
+    padding:8px 4px;text-align:center;border-right:1px solid var(--rule-soft);
+    border-bottom:1px solid var(--rule-soft)
+  }
+  .scroll th{
+    font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-2);
+    font-weight:600;border-bottom:1px solid var(--rule)
+  }
+  .scroll tr:last-child td{border-bottom:0}
+  .scroll td.name,.scroll th.name{
+    position:sticky;left:0;background:var(--card);z-index:1;text-align:left;
+    font-family:var(--ui);font-size:14px;font-weight:600;padding-right:11px;
+    max-width:118px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    border-right:1px solid var(--rule)
+  }
+  .scroll th.name{font-size:9px;font-weight:600;letter-spacing:.18em}
+  .scroll .sumcol{
+    background:var(--card-2);font-weight:700;border-left:1px solid var(--rule)
+  }
+  .scroll th.sumcol{letter-spacing:.12em;color:var(--ink)}
+  .scroll tr.parrow td{background:var(--green-tint);font-weight:700;color:var(--green-ink)}
+  .scroll tr.parrow td.name{background:var(--green-tint);color:var(--green-ink)}
+  .scroll tr.parrow .sumcol{background:var(--green-tint)}
+  .scroll td.cur{box-shadow:inset 0 0 0 2px var(--green)}
+  /* scorecard convention: circle anything under par, square a double bogey or worse */
+  .mark{
+    display:inline-flex;align-items:center;justify-content:center;
+    min-width:23px;height:23px;line-height:1
+  }
+  .mark.birdie{border:1.5px solid var(--claret);border-radius:50%;color:var(--claret);font-weight:700}
+  .mark.dbl{border:1.5px solid var(--ink-2);border-radius:1px}
+  .legend{
+    display:flex;gap:18px;justify-content:center;flex-wrap:wrap;
+    margin-top:13px;padding-top:12px;border-top:1px solid var(--rule-soft);
+    font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)
+  }
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .legend i{
+    width:15px;height:15px;border:1.5px solid var(--ink-2);font-style:normal;flex:none
+  }
+  .legend i.c{border-radius:50%;border-color:var(--claret)}
 
   /* ---------- rules ---------- */
   .callout{
-    background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:var(--r);
-    padding:14px;font-size:15px;line-height:1.5;margin-bottom:14px
+    background:var(--card-2);border:1px solid var(--rule);border-left:3px solid var(--brass-deep);
+    border-radius:0 var(--r) var(--r) 0;padding:14px 15px;font-size:15px;
+    line-height:1.55;margin-bottom:15px
   }
-  .callout b{color:var(--warn-ink)}
+  .callout b{
+    display:block;margin-bottom:4px;color:var(--brass-deep);font-size:10px;
+    letter-spacing:.2em;text-transform:uppercase;font-weight:600
+  }
   .rule{
-    background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
-    padding:16px 16px 6px;margin-bottom:12px;box-shadow:var(--shadow)
+    background:var(--card);border:1px solid var(--rule);border-radius:var(--r);
+    padding:16px 16px 7px;margin-bottom:12px
   }
   .rule h3{
-    margin:0 0 6px;font-size:17px;font-weight:600;color:var(--ink);
-    display:flex;align-items:center;gap:9px;text-wrap:balance
+    margin:0 0 3px;font-size:17px;font-weight:600;color:var(--ink);letter-spacing:.01em;
+    display:flex;align-items:baseline;gap:10px;text-wrap:balance;
+    padding-bottom:10px;border-bottom:1px solid var(--rule-soft)
   }
   .rule h3 .rn{
-    flex:none;width:23px;height:23px;border-radius:99px;background:var(--accent);
-    color:var(--on-accent);font-size:12px;font-weight:700;
-    display:flex;align-items:center;justify-content:center
+    flex:none;font-family:var(--display);font-size:19px;font-weight:700;
+    color:var(--brass-deep);font-variant-numeric:tabular-nums
   }
-  .rule p{margin:9px 0;font-size:15px;line-height:1.55}
-  .rule ul{margin:9px 0;padding-left:21px;font-size:15px;line-height:1.55}
+  .rule p{margin:10px 0;font-size:15px;line-height:1.6}
+  .rule ul{margin:10px 0;padding-left:20px;font-size:15px;line-height:1.6}
   .rule li{margin-bottom:7px}
-  .rule li::marker{color:var(--accent)}
+  .rule li::marker{color:var(--brass-deep)}
   .mode{
-    border-left:3px solid var(--accent);background:var(--accent-soft);
-    border-radius:0 10px 10px 0;padding:11px 13px;margin:11px 0
+    border-left:2px solid var(--green);background:var(--green-tint);
+    padding:11px 13px;margin:11px 0
   }
   .mode > b{
-    color:var(--accent-ink);display:block;margin-bottom:3px;font-size:12px;
-    letter-spacing:.13em;text-transform:uppercase
+    color:var(--green-ink);display:block;margin-bottom:4px;font-size:10px;
+    letter-spacing:.2em;text-transform:uppercase;font-weight:600
   }
-  .mode span{font-size:14px;line-height:1.5;display:block;color:var(--ink)}
-  .mode span b{color:var(--ink)}
-  .yes,.no{font-size:15px;line-height:1.55;margin:9px 0;padding-left:22px}
-  .yes li::marker{content:"\2713  ";color:var(--accent);font-weight:700}
-  .no li::marker{content:"\2715  ";color:var(--flag);font-weight:700}
+  .mode span{font-size:14px;line-height:1.55;display:block;color:var(--ink)}
+  .mode span b{color:var(--ink);font-weight:600}
+  .yes,.no{font-size:15px;line-height:1.6;margin:10px 0;padding-left:22px}
+  .yes li::marker{content:"\2713  ";color:var(--green);font-weight:700}
+  .no li::marker{content:"\2715  ";color:var(--claret);font-weight:700}
 
-  /* ---------- bottom nav ---------- */
+  /* ---------- nav ---------- */
   nav{
-    position:fixed;left:0;right:0;bottom:0;background:var(--surface);
-    border-top:1px solid var(--line);display:flex;z-index:20;
+    position:fixed;left:0;right:0;bottom:0;background:var(--card);
+    border-top:1px solid var(--rule);display:flex;z-index:20;
     padding-bottom:env(safe-area-inset-bottom,0px)
   }
   nav button{
-    flex:1;background:none;border-radius:0;padding:10px 4px 12px;color:var(--muted);
-    font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase
+    flex:1;background:none;border-radius:0;padding:16px 4px;color:var(--ink-2);
+    font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;
+    border-top:2px solid transparent;margin-top:-1px
   }
-  nav button b{display:block;font-size:19px;font-weight:400;margin-bottom:2px;line-height:1.1}
-  nav button.on{color:var(--accent-ink);box-shadow:inset 0 3px 0 var(--accent)}
+  nav button.on{color:var(--green-ink);border-top-color:var(--green)}
 
   .hide{display:none !important}
   @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
@@ -292,37 +381,45 @@
 <body>
 
 <header>
-  <h1>Camp Impact Country Club</h1>
-  <div class="flagline" id="sub">Soccer Golf &middot; 18 Holes</div>
+  <svg class="seal" viewBox="0 0 80 80" role="img" aria-label="Clubwappen">
+    <circle cx="40" cy="40" r="37" fill="none" stroke="currentColor" stroke-width="1.2"></circle>
+    <circle cx="40" cy="40" r="31" fill="none" stroke="currentColor" stroke-width="0.7"></circle>
+    <path d="M 35 55 V 23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"></path>
+    <path d="M 35 23 L 55 28.5 L 35 34 Z" fill="currentColor"></path>
+    <circle cx="46" cy="51" r="4.2" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
+    <path d="M 24 56 H 56" stroke="currentColor" stroke-width="1" stroke-linecap="round"></path>
+  </svg>
+  <h1>Camp Impact<span>Country Club</span></h1>
+  <div class="flagline" id="sub">Fu&szlig;ballgolf &middot; 18 L&ouml;cher</div>
 </header>
 
 <div class="wrap">
 
   <!-- ============ SETUP ============ -->
   <section id="v-setup">
-    <h2>Who's playing?</h2>
+    <h2>Wer spielt mit?</h2>
     <div class="card">
       <div id="playerList"></div>
       <div class="prow">
         <span class="num">+</span>
-        <input type="text" id="newPlayer" placeholder="Add a player" autocomplete="off" enterkeyhint="done">
+        <input type="text" id="newPlayer" placeholder="Spieler hinzuf&uuml;gen" autocomplete="off" enterkeyhint="done">
       </div>
-      <p class="note" id="setupNote">Add at least one player to tee off.</p>
+      <p class="note" id="setupNote">Mindestens ein Spieler zum Abschlag.</p>
     </div>
 
-    <h2>The course</h2>
+    <h2>Der Platz</h2>
     <div class="card">
       <div id="courseStrip"></div>
       <div class="coursefoot">
-        <span>Total par <b id="parTotal">0</b></span>
-        <span class="holes">18 holes</span>
+        <span>Gesamt-Par <b id="parTotal">0</b></span>
+        <span>18 L&ouml;cher</span>
       </div>
     </div>
 
-    <button class="btn" id="startBtn" disabled>Start Round</button>
-    <button class="btn ghost" id="setupRulesBtn" style="margin-top:10px">Read the Rules</button>
+    <button class="btn" id="startBtn" disabled>Runde starten</button>
+    <button class="btn ghost" id="setupRulesBtn" style="margin-top:10px">Regeln lesen</button>
     <div id="resumeWrap" class="hide" style="margin-top:10px">
-      <button class="btn ghost" id="resumeBtn">Resume round in progress</button>
+      <button class="btn ghost" id="resumeBtn">Laufende Runde fortsetzen</button>
     </div>
   </section>
 
@@ -331,144 +428,159 @@
     <div class="holebar">
       <button class="arrow" id="prevHole">&#8249;</button>
       <div class="holebox">
-        <div class="h">Hole <b id="holeNum">1</b> of 18</div>
+        <div class="h">Loch <b id="holeNum">1</b> von 18</div>
         <div class="n">Par <span id="holePar">3</span> <em id="holeMax"></em></div>
       </div>
       <button class="arrow" id="nextHole">&#8250;</button>
     </div>
     <div class="pbar"><i id="pbar" style="width:0%"></i></div>
     <div id="scoreCards"></div>
-    <button class="btn" id="advanceBtn">Next Hole</button>
+    <button class="btn" id="advanceBtn">N&auml;chstes Loch</button>
   </section>
 
   <!-- ============ SCORECARD ============ -->
   <section id="v-card" class="hide">
-    <h2>Leaderboard</h2>
-    <div class="card">
+    <h2>Rangliste</h2>
+    <div class="board">
       <table id="leaderboard"></table>
     </div>
 
-    <h2>Full scorecard</h2>
-    <div class="card scroll">
-      <table id="fullCard"></table>
+    <h2>Scorekarte</h2>
+    <div class="card">
+      <div class="scroll">
+        <table id="fullCard"></table>
+      </div>
+      <div class="legend">
+        <span><i class="c"></i>unter Par</span>
+        <span><i></i>Doppel-Bogey oder mehr</span>
+      </div>
     </div>
 
     <div class="stack" style="margin-top:18px">
-      <button class="btn ghost" id="shareBtn">Copy scorecard as text</button>
-      <button class="btn danger" id="newRoundBtn">Start a new round</button>
+      <button class="btn ghost" id="shareBtn">Scorekarte als Text kopieren</button>
+      <button class="btn danger" id="newRoundBtn">Neue Runde starten</button>
     </div>
   </section>
 
   <!-- ============ RULES ============ -->
   <section id="v-rules" class="hide">
-    <h2>House Rules</h2>
+    <h2>Platzregeln</h2>
 
     <div class="callout">
-      <b>The short version:</b> tee off within a meter of the yellow marker, play
-      the ball exactly where it lies, every attempt is one motion and one hit, and
-      nobody scores worse than double par.
+      <b>Kurzfassung</b>
+      Innerhalb von einem Meter um die gelbe Markierung abschlagen, den Ball
+      spielen, wie er liegt, jeder Versuch ist eine Bewegung und ein Schuss, und
+      niemand schreibt mehr als das doppelte Par.
     </div>
 
     <div class="rule">
-      <h3><span class="rn">1</span> Teeing off</h3>
-      <p>Start each hole with the ball on the ground <b>within 1 meter of the yellow
-      tee marker</b>. Anywhere inside that circle is fair &mdash; in front, behind, or
-      off to the side.</p>
-      <p>Your tee shot is hit number one on that hole.</p>
+      <h3><span class="rn">1</span> Abschlag</h3>
+      <p>Jedes Loch beginnt mit dem Ball auf dem Boden, <b>h&ouml;chstens 1 Meter von
+      der gelben Abschlagsmarkierung</b> entfernt. &Uuml;berall in diesem Kreis ist
+      erlaubt &mdash; davor, dahinter oder seitlich.</p>
+      <p>Dein Abschlag ist Schuss Nummer eins auf diesem Loch.</p>
     </div>
 
     <div class="rule">
-      <h3><span class="rn">2</span> Finishing a hole</h3>
-      <p>Pick one mode before anyone tees off on hole 1, and play it the whole round
-      so everyone's scores mean the same thing.</p>
+      <h3><span class="rn">2</span> Loch beenden</h3>
+      <p>Legt euch vor dem ersten Abschlag auf einen Modus fest und spielt ihn die
+      ganze Runde durch, damit alle Ergebnisse dasselbe bedeuten.</p>
       <div class="mode">
-        <b>Easy mode</b>
-        <span>Hit the tire. Any contact between your ball and the tire finishes
-        the hole.</span>
+        <b>Leichter Modus</b>
+        <span>Triff den Reifen. Jede Ber&uuml;hrung zwischen deinem Ball und dem
+        Reifen beendet das Loch.</span>
       </div>
       <div class="mode">
-        <b>Normal mode</b>
-        <span>Finish it one of three ways: the ball <b>comes to rest in the tire</b>,
-        or your ball <b>hits the pole</b>, or your ball <b>hits the cone</b>. Rolling
-        through the tire without staying in it doesn't count &mdash; play on from
-        wherever it stops.</span>
+        <b>Normaler Modus</b>
+        <span>Drei M&ouml;glichkeiten: Der Ball <b>bleibt im Reifen liegen</b>, oder
+        dein Ball <b>trifft die Stange</b>, oder dein Ball <b>trifft das
+        H&uuml;tchen</b>. Durch den Reifen durchrollen z&auml;hlt nicht &mdash; spiel
+        weiter von dort, wo der Ball liegen bleibt.</span>
       </div>
-      <p>The hit that finishes the hole counts like any other. Mixed group? Nothing
-      stops a younger player using easy mode &mdash; just agree up front.</p>
+      <p>Der Schuss, der das Loch beendet, z&auml;hlt wie jeder andere. Gemischte
+      Gruppe? J&uuml;ngere Spieler d&uuml;rfen den leichten Modus spielen &mdash;
+      sprecht es nur vorher ab.</p>
     </div>
 
     <div class="rule">
-      <h3><span class="rn">3</span> Play it where it lies</h3>
-      <p><b>You can never move the ball.</b> Wherever it stops is where you play from
-      &mdash; long grass, a slope, mud, up against a root. No nudging it to a better
-      spot, no flattening what's around it, no kicking obstacles out of the way.</p>
-      <p><b>If the ball is genuinely unplayable</b> &mdash; out of reach, wedged under
-      something, in water, against a wall &mdash; you may place it at the
-      <b>nearest playable point, no closer to the hole</b>, and add
-      <b>one penalty hit</b> to your score.</p>
+      <h3><span class="rn">3</span> Spiel den Ball, wie er liegt</h3>
+      <p><b>Du darfst den Ball niemals bewegen.</b> Wo er liegen bleibt, wird
+      weitergespielt &mdash; hohes Gras, Hang, Matsch, an einer Wurzel. Kein
+      Zurechtlegen, kein Platttreten, keine Hindernisse wegr&auml;umen.</p>
+      <p><b>Ist der Ball wirklich unspielbar</b> &mdash; au&szlig;er Reichweite, unter
+      etwas eingeklemmt, im Wasser, an einer Mauer &mdash; darfst du ihn am
+      <b>n&auml;chstgelegenen spielbaren Punkt</b> ablegen, <b>nicht n&auml;her zum
+      Loch</b>, mit <b>einem Schuss Strafe</b>.</p>
       <ul>
-        <li>Nearest, not nicest. Measure from where the ball actually sits and move
-        the shortest distance that makes it playable.</li>
-        <li>The penalty is +1 on your card. Your next attempt from the new spot
-        counts as a normal hit on top of that.</li>
-        <li>You decide whether your own ball is unplayable, but the group decides
-        where it gets placed.</li>
+        <li>Am n&auml;chsten, nicht am sch&ouml;nsten. Gemessen wird von der Stelle,
+        an der der Ball tats&auml;chlich liegt, und zwar den k&uuml;rzesten Weg, der
+        ihn spielbar macht.</li>
+        <li>Die Strafe ist +1 auf deiner Karte. Dein n&auml;chster Versuch von der
+        neuen Stelle z&auml;hlt zus&auml;tzlich ganz normal.</li>
+        <li>Ob dein Ball unspielbar ist, entscheidest du selbst. Wo er abgelegt
+        wird, entscheidet die Gruppe.</li>
       </ul>
     </div>
 
     <div class="rule">
-      <h3><span class="rn">4</span> One motion, one hit</h3>
-      <p>Every attempt must be a <b>single continuous motion</b> that touches the ball
-      <b>once</b>. Within that, get creative:</p>
+      <h3><span class="rn">4</span> Eine Bewegung, ein Schuss</h3>
+      <p>Jeder Versuch muss <b>eine einzige durchgehende Bewegung</b> sein, die den
+      Ball <b>genau einmal</b> ber&uuml;hrt. Innerhalb dieser Regel ist alles
+      erlaubt:</p>
       <ul class="yes">
-        <li>A normal kick.</li>
-        <li><b>Drag it</b> &mdash; pull or push the ball along with your foot, as long
-        as it's one unbroken motion.</li>
-        <li><b>Scoop it</b> &mdash; pick the ball up with your foot and flick it away,
-        all in one motion.</li>
-        <li><b>Pinch and flick</b> &mdash; trap the ball between both feet and flick it
-        forward, again in one motion.</li>
+        <li>Ein normaler Schuss.</li>
+        <li><b>Ziehen</b> &mdash; den Ball mit dem Fu&szlig; ziehen oder schieben,
+        solange es eine ununterbrochene Bewegung bleibt.</li>
+        <li><b>L&ouml;ffeln</b> &mdash; den Ball mit dem Fu&szlig; aufnehmen und in
+        derselben Bewegung wegschlenzen.</li>
+        <li><b>Klemmen und schnellen</b> &mdash; den Ball zwischen beide
+        F&uuml;&szlig;e klemmen und nach vorne schnellen, wieder in einer
+        Bewegung.</li>
       </ul>
-      <p>What breaks the rule:</p>
+      <p>Was die Regel bricht:</p>
       <ul class="no">
-        <li>Two separate kicks, or a touch to set it up before the real hit.</li>
-        <li>Juggling, dribbling, or stopping mid-motion and starting again.</li>
-        <li>Picking the ball up with your hands, or carrying or throwing it.</li>
+        <li>Zwei getrennte Sch&uuml;sse, oder eine Ber&uuml;hrung zum Zurechtlegen
+        vor dem eigentlichen Schuss.</li>
+        <li>Jonglieren, Dribbeln, oder mitten in der Bewegung stoppen und neu
+        ansetzen.</li>
+        <li>Den Ball mit den H&auml;nden aufheben, tragen oder werfen.</li>
       </ul>
-      <p>A whiff still counts as a hit. If you double-touch by accident, the attempt
-      counts and you play the ball from wherever it ends up.</p>
+      <p>Ein Luftschuss z&auml;hlt trotzdem als Schuss. Bei einer versehentlichen
+      Doppelber&uuml;hrung z&auml;hlt der Versuch, und du spielst den Ball von dort
+      weiter, wo er liegen bleibt.</p>
     </div>
 
     <div class="rule">
-      <h3><span class="rn">5</span> Scoring</h3>
-      <p>Count every attempt, plus any penalty hits, and record the total for the
-      hole.</p>
-      <p><b>The most you can score on any hole is double par</b> &mdash; 8 on a par 4,
-      6 on a par 3, 10 on a par 5. Once you hit that number, pick the ball up, take
-      the max, and move to the next tee. This app won't let you enter more.</p>
-      <p>Lowest total after all 18 holes wins.</p>
+      <h3><span class="rn">5</span> Z&auml;hlweise</h3>
+      <p>Z&auml;hle jeden Versuch plus alle Strafen und trag die Summe f&uuml;r das
+      Loch ein.</p>
+      <p><b>Das Maximum auf jedem Loch ist das doppelte Par</b> &mdash; 8 bei Par 4,
+      6 bei Par 3, 10 bei Par 5. Wer diese Zahl erreicht, hebt den Ball auf,
+      schreibt das Maximum und geht zum n&auml;chsten Abschlag. Diese App
+      l&auml;sst nichts H&ouml;heres zu.</p>
+      <p>Nach allen 18 L&ouml;chern gewinnt das niedrigste Gesamtergebnis.</p>
     </div>
 
     <div class="rule">
-      <h3><span class="rn">6</span> Good form</h3>
+      <h3><span class="rn">6</span> Fairplay</h3>
       <ul>
-        <li>Whoever is furthest from the hole plays next.</li>
-        <li>Never kick while someone is downrange &mdash; shout before you strike if
-        you can't see.</li>
-        <li>Anything these rules don't cover, the group settles on the spot. It's the
-        honor system out there.</li>
+        <li>Wer am weitesten vom Loch entfernt ist, spielt als N&auml;chstes.</li>
+        <li>Niemals schie&szlig;en, wenn jemand in der Schussbahn steht &mdash; ruf
+        vorher, wenn du es nicht &uuml;berblicken kannst.</li>
+        <li>Alles, was diese Regeln nicht abdecken, kl&auml;rt die Gruppe vor Ort.
+        Hier gilt das Ehrenwort.</li>
       </ul>
     </div>
 
-    <button class="btn ghost" id="rulesBack">Back</button>
+    <button class="btn ghost" id="rulesBack">Zur&uuml;ck</button>
   </section>
 
 </div>
 
 <nav id="nav" class="hide">
-  <button data-view="play" id="navPlay"><b>&#9971;</b>Play</button>
-  <button data-view="card" id="navCard"><b>&#128203;</b>Scorecard</button>
-  <button data-view="rules" id="navRules"><b>&#128214;</b>Rules</button>
+  <button data-view="play" id="navPlay">Spielen</button>
+  <button data-view="card" id="navCard">Scorekarte</button>
+  <button data-view="rules" id="navRules">Regeln</button>
 </nav>
 
 <script>
@@ -553,7 +665,7 @@
     for(var i=0;i<HOLES;i++) if(card[i] != null) d += card[i] - state.pars[i];
     return d;
   }
-  function fmtToPar(d){ return d === 0 ? "E" : (d > 0 ? "+" + d : String(d)); }
+  function fmtToPar(d){ return d === 0 ? "±0" : (d > 0 ? "+" + d : String(d)); }
   function toParClass(d){ return d < 0 ? "under" : (d === 0 ? "even" : "over"); }
 
   function holeComplete(hole){
@@ -588,8 +700,8 @@
     $("navPlay").classList.toggle("on", v === "play");
     $("navCard").classList.toggle("on", v === "card");
     $("navRules").classList.toggle("on", v === "rules");
-    $("rulesBack").textContent = backTo === "setup" ? "Back to Players" :
-      (backTo === "card" ? "Back to Scorecard" : "Back to Hole " + (state.hole + 1));
+    $("rulesBack").textContent = backTo === "setup" ? "Zurück zu den Spielern" :
+      (backTo === "card" ? "Zurück zur Scorekarte" : "Zurück zu Loch " + (state.hole + 1));
     window.scrollTo(0, 0);
     render();
   }
@@ -605,9 +717,9 @@
   function renderSub(){
     var sub = $("sub");
     if(state.started && state.players.length){
-      sub.textContent = "Soccer Golf · 18 Holes · Par " + parTotal();
+      sub.textContent = "Fußballgolf · 18 Löcher · Par " + parTotal();
     } else {
-      sub.textContent = "Soccer Golf · 18 Holes";
+      sub.textContent = "Fußballgolf · 18 Löcher";
     }
   }
 
@@ -616,20 +728,20 @@
     var list = $("playerList");
     list.innerHTML = "";
     if(!state.players.length){
-      list.appendChild(el("p","empty","No players yet."));
+      list.appendChild(el("p","empty","Noch keine Spieler."));
     }
     state.players.forEach(function(p, i){
       var row = el("div","prow");
       row.appendChild(el("span","num", String(i+1)));
       var inp = document.createElement("input");
-      inp.type = "text"; inp.value = p.name; inp.setAttribute("aria-label","Player name");
+      inp.type = "text"; inp.value = p.name; inp.setAttribute("aria-label","Name des Spielers");
       inp.addEventListener("input", function(){
         p.name = inp.value;
         save();
       });
       row.appendChild(inp);
       var x = el("button","x","×");
-      x.title = "Remove " + p.name;
+      x.title = p.name + " entfernen";
       x.addEventListener("click", function(){
         state.players.splice(i,1);
         delete state.scores[p.id];
@@ -641,8 +753,8 @@
 
     $("startBtn").disabled = state.players.length === 0;
     $("setupNote").textContent = state.players.length
-      ? state.players.length + (state.players.length === 1 ? " player" : " players") + " · tap a name to edit"
-      : "Add at least one player to tee off.";
+      ? state.players.length + " Spieler · Namen antippen zum Ändern"
+      : "Mindestens ein Spieler zum Abschlag.";
 
     renderCourse();
   }
@@ -652,7 +764,7 @@
     $("parTotal").textContent = parTotal();
     var wrap = $("courseStrip");
     wrap.innerHTML = "";
-    [[0,"Out"],[9,"In"]].forEach(function(nine){
+    [[0,"Hin"],[9,"Rück"]].forEach(function(nine){
       var start = nine[0], label = nine[1];
       var box = el("div","nine"), tbl = el("table");
       var thead = el("thead"), hr = el("tr");
@@ -682,7 +794,7 @@
     var h = state.hole, par = state.pars[h], max = maxFor(h);
     $("holeNum").textContent = h + 1;
     $("holePar").textContent = par;
-    $("holeMax").textContent = "  ·  max " + max;
+    $("holeMax").textContent = "· max. " + max;
     $("prevHole").disabled = h === 0;
     $("nextHole").disabled = h === HOLES - 1;
     $("pbar").style.width = Math.round(holesDone() / HOLES * 100) + "%";
@@ -732,10 +844,10 @@
     var btn = $("advanceBtn");
     var done = holeComplete(h);
     if(h === HOLES - 1){
-      btn.textContent = roundComplete() ? "See Final Scorecard" : "See Scorecard";
+      btn.textContent = roundComplete() ? "Endergebnis ansehen" : "Scorekarte ansehen";
       btn.disabled = false;
     } else {
-      btn.textContent = done ? "Next Hole →" : "Enter every score to continue";
+      btn.textContent = done ? "Nächstes Loch" : "Alle Ergebnisse eintragen";
       btn.disabled = !done;
     }
   }
@@ -752,9 +864,8 @@
     var lb = $("leaderboard");
     lb.innerHTML = "";
     var thead = el("thead"), hr = el("tr");
-    ["","Player","Thru","Score","Total"].forEach(function(t,i){
-      var th = el("th", i===1 ? "name" : null, t);
-      hr.appendChild(th);
+    ["","Spieler","Gesp.","Zu Par","Gesamt"].forEach(function(t,i){
+      hr.appendChild(el("th", i === 0 ? "pos" : (i === 1 ? "name" : null), t));
     });
     thead.appendChild(hr); lb.appendChild(thead);
 
@@ -772,12 +883,12 @@
     ranked.forEach(function(p, i){
       var tr = el("tr");
       var thru = playerThru(p.id);
-      tr.appendChild(el("td", null, thru ? String(i+1) : "–"));
+      tr.appendChild(el("td","pos", thru ? String(i+1) : "–"));
       tr.appendChild(el("td","name", p.name));
-      tr.appendChild(el("td", null, thru === HOLES ? "F" : String(thru)));
+      tr.appendChild(el("td", thru ? null : "idle", thru === HOLES ? "F" : String(thru)));
       var d = playerToPar(p.id);
-      tr.appendChild(el("td", thru ? toParClass(d) : null, thru ? fmtToPar(d) : "–"));
-      tr.appendChild(el("td","tot", thru ? String(playerTotal(p.id)) : "–"));
+      tr.appendChild(el("td", thru ? toParClass(d) : "idle", thru ? fmtToPar(d) : "–"));
+      tr.appendChild(el("td","tot" + (thru ? "" : " idle"), thru ? String(playerTotal(p.id)) : "–"));
       tbody.appendChild(tr);
     });
     lb.appendChild(tbody);
@@ -786,13 +897,13 @@
     var fc = $("fullCard");
     fc.innerHTML = "";
     var h2 = el("thead"), r2 = el("tr");
-    r2.appendChild(el("th","name","Hole"));
+    r2.appendChild(el("th","name","Loch"));
     for(var i=0;i<HOLES;i++){
       r2.appendChild(el("th", null, String(i+1)));
-      if(i === 8) r2.appendChild(el("th", null, "Out"));
+      if(i === 8) r2.appendChild(el("th","sumcol","Hin"));
     }
-    r2.appendChild(el("th", null, "In"));
-    r2.appendChild(el("th", null, "Tot"));
+    r2.appendChild(el("th","sumcol","Rück"));
+    r2.appendChild(el("th","sumcol","Gesamt"));
     h2.appendChild(r2); fc.appendChild(h2);
 
     var b2 = el("tbody");
@@ -800,10 +911,10 @@
     pr.appendChild(el("td","name","Par"));
     for(var j=0;j<HOLES;j++){
       pr.appendChild(el("td", null, String(state.pars[j])));
-      if(j === 8) pr.appendChild(el("td","tot", String(parNine(0))));
+      if(j === 8) pr.appendChild(el("td","sumcol", String(parNine(0))));
     }
-    pr.appendChild(el("td","tot", String(parNine(9))));
-    pr.appendChild(el("td","tot", String(parTotal())));
+    pr.appendChild(el("td","sumcol", String(parNine(9))));
+    pr.appendChild(el("td","sumcol", String(parTotal())));
     b2.appendChild(pr);
 
     state.players.forEach(function(p){
@@ -811,10 +922,13 @@
       tr.appendChild(el("td","name", p.name));
       for(var k=0;k<HOLES;k++){
         var v = state.scores[p.id][k];
-        var td = el("td", k === state.hole ? "cur" : null, v == null ? "–" : String(v));
-        if(v != null){
-          var diff = v - state.pars[k];
-          if(diff < 0) td.classList.add("under");
+        var td = el("td", k === state.hole ? "cur" : null);
+        if(v == null){
+          td.textContent = "–";
+        } else {
+          // circle anything under par, square a double bogey or worse, as on a paper card
+          var d = v - state.pars[k];
+          td.appendChild(el("span","mark" + (d < 0 ? " birdie" : (d >= 2 ? " dbl" : "")), String(v)));
         }
         (function(hole){
           td.addEventListener("click", function(){ goHole(hole); show("play"); });
@@ -823,28 +937,29 @@
         tr.appendChild(td);
         if(k === 8){
           var out = playerNine(p.id, 0);
-          tr.appendChild(el("td","tot", out == null ? "–" : String(out)));
+          tr.appendChild(el("td","sumcol", out == null ? "–" : String(out)));
         }
       }
       var back = playerNine(p.id, 9);
-      tr.appendChild(el("td","tot", back == null ? "–" : String(back)));
-      tr.appendChild(el("td","tot", playerThru(p.id) ? String(playerTotal(p.id)) : "–"));
+      tr.appendChild(el("td","sumcol", back == null ? "–" : String(back)));
+      tr.appendChild(el("td","sumcol", playerThru(p.id) ? String(playerTotal(p.id)) : "–"));
       b2.appendChild(tr);
     });
     fc.appendChild(b2);
   }
 
   function scorecardText(){
-    var lines = ["Camp Impact Country Club — Soccer Golf", "Par " + parTotal() + " · 18 holes", ""];
+    var lines = ["Camp Impact Country Club — Fußballgolf",
+                 "Par " + parTotal() + " · 18 Löcher", ""];
     state.players.slice().sort(function(a,b){
       return playerToPar(a.id) - playerToPar(b.id);
     }).forEach(function(p){
       var thru = playerThru(p.id);
       lines.push(p.name + ": " + (thru ? playerTotal(p.id) + " (" + fmtToPar(playerToPar(p.id)) + ")" +
-        (thru < HOLES ? " thru " + thru : "") : "no scores"));
+        (thru < HOLES ? ", " + thru + " Löcher" : "") : "kein Ergebnis"));
     });
     lines.push("");
-    lines.push("Hole:  " + state.pars.map(function(_,i){ return pad(i+1); }).join(" "));
+    lines.push("Loch:  " + state.pars.map(function(_,i){ return pad(i+1); }).join(" "));
     lines.push("Par:   " + state.pars.map(function(v){ return pad(v); }).join(" "));
     state.players.forEach(function(p){
       lines.push(pad10(p.name) + state.scores[p.id].map(function(v){
@@ -904,15 +1019,15 @@
       setTimeout(function(){ btn.textContent = old; }, 1600);
     }
     if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(txt).then(function(){ flash("Copied!"); },
-        function(){ window.prompt("Copy your scorecard:", txt); });
+      navigator.clipboard.writeText(txt).then(function(){ flash("Kopiert!"); },
+        function(){ window.prompt("Scorekarte kopieren:", txt); });
     } else {
-      window.prompt("Copy your scorecard:", txt);
+      window.prompt("Scorekarte kopieren:", txt);
     }
   });
 
   $("newRoundBtn").addEventListener("click", function(){
-    if(!window.confirm("Clear all scores and start over? Players and pars are kept.")) return;
+    if(!window.confirm("Alle Ergebnisse löschen und neu starten? Die Spieler bleiben erhalten.")) return;
     state.players.forEach(function(p){ state.scores[p.id] = blankCard(); });
     state.hole = 0;
     state.started = false;
