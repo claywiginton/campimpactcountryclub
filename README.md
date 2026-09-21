@@ -8,8 +8,9 @@ README stays in English for whoever maintains it.
 Open `index.html` — that's the whole app. One file, no build step, no install.
 Works on a phone in the middle of a field.
 
-**Hosted copy:** https://claude.ai/artifact/1TCSVFYNUVhuA77GpVHNu2 (private until
-it's shared from the page's Share menu).
+**Live site:** https://claywiginton.github.io/campimpactcountryclub/ — served by
+GitHub Pages from `main`. There is also a Claude-hosted copy at
+https://claude.ai/artifact/1TCSVFYNUVhuA77GpVHNu2, built by `make-artifact.py`.
 
 ## How it works
 
@@ -67,14 +68,12 @@ means editing `DEFAULT_PARS` in `index.html`.
 
 ## Hosting it
 
+Live at **https://claywiginton.github.io/campimpactcountryclub/**
+
 **GitHub Pages** is the whole deployment story — the repo is public and
-`index.html` sits at the root, so there is nothing to build:
-
-> Settings → Pages → Source: **Deploy from a branch** → Branch:
-> `claude/sweet-goodall-o548qw` / `(root)` → Save
-
-That publishes to **https://claywiginton.github.io/campimpactcountryclub/**,
-usually within a minute. Every push to that branch redeploys automatically.
+`index.html` sits at the root, so there is nothing to build. It is configured
+as Settings → Pages → Source: **Deploy from a branch** → Branch: `main` /
+`(root)`. Every push to `main` redeploys the site, usually within a minute.
 
 The page ships an SVG favicon, an apple-touch-icon and a web manifest, so
 "Add to Home Screen" gives a proper standalone app with the club seal on it.
