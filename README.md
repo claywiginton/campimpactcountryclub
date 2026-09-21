@@ -50,11 +50,25 @@ Par for each hole is marked right on its score button, so nobody has to remember
 
 ## Design
 
-Deep turf green and brass on card stock, hairline rules instead of drop shadows.
-Bodoni Moda carries the club identity and the hole numbers, Archivo the
-interface, Archivo Narrow the scorecard grid. The masthead and the leaderboard
-are the only two dark surfaces, so the board reads as the board. Light and dark
-themes are both defined at token level; the masthead stays turf either way.
+Tuned for one hand, in daylight, on a phone — everything that did not serve that
+is gone.
+
+- **No downloaded fonts.** The system font stack renders instantly and the page
+  makes *zero* network requests, so it works with no signal in the middle of a
+  field. Nothing to download means nothing to fail.
+- **Nothing tappable under 48px.** Score buttons are 58px tall; so are the hole
+  arrows, the name field and the nav.
+- **The masthead only appears on the player screen.** During play the screen
+  belongs to the scoring.
+- **Hole and par stay pinned** to the top while you scroll the players.
+- **The screen stays awake** while the play screen is open, so the phone does
+  not lock between holes.
+- Plain sentence case, not letterspaced capitals — faster to read at a glance.
+- High-contrast text on near-white or near-black, in both themes.
+
+What survived is what carries information: the green tee plate that identifies
+the hole at a glance, the par marking on each score button, and the circled /
+boxed scores on the card.
 
 ## The course
 
