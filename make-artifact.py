@@ -30,5 +30,9 @@ body = re.sub(r'^\s*<link rel="(icon|apple-touch-icon|manifest)"[^>]*>\s*$\n?', 
 
 # the service worker caches sibling files that only exist on the static host
 body = re.sub(r'<!-- offline:start -->.*?<!-- offline:end -->\n?', '', body, flags=re.S)
+
+# the round store only accepts the GitHub Pages origin, so the hosted copy
+# scores locally instead of firing requests that CORS will refuse
+body = re.sub(r'var API_BASE = "[^"]*";', 'var API_BASE = "";', body, count=1)
 out.write_text(body.strip() + "\n", encoding="utf-8")
 print(f"wrote {out} ({len(body.strip()):,} bytes)")
