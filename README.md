@@ -9,7 +9,8 @@ Open `index.html` — that's the whole app. One file, no build step, no install.
 Works on a phone in the middle of a field.
 
 **Live site:** https://claywiginton.github.io/campimpactcountryclub/ — served by
-GitHub Pages from `main`. There is also a Claude-hosted copy at
+GitHub Pages from `main`, with rounds stored in Cloudflare D1 behind
+`fussballgolf-api.chipandclay.workers.dev`. There is also a Claude-hosted copy at
 https://claude.ai/artifact/1TCSVFYNUVhuA77GpVHNu2, built by `make-artifact.py`.
 
 ## How it works
@@ -29,6 +30,34 @@ https://claude.ai/artifact/1TCSVFYNUVhuA77GpVHNu2, built by `make-artifact.py`.
 
 Scores save to the browser automatically, so closing the tab or locking the phone
 doesn't lose the round. Reopening drops you back on the first unfinished hole.
+
+## Round history
+
+Finished rounds are kept in a **Cloudflare D1** database, so they outlive any
+one phone and show up on everyone's. The home screen lists past rounds under
+*Frühere Runden* — date, who won and their score.
+
+The phone still owns the round while it is being played. Pushing it to the
+database is a background errand that is allowed to fail: every round carries an
+id generated on the phone, so a push that never landed simply happens later,
+and arriving twice updates the row instead of duplicating it. A round played
+with no signal is marked *offline* in the list and goes up by itself the next
+time there is a connection. Nothing about scoring waits on the network.
+
+Pieces:
+
+| | |
+|---|---|
+| `schema.sql` | the two tables — `rounds` and `round_players` |
+| `worker/` | the API: `GET /rounds`, `POST /rounds` (upsert), `GET /health` |
+| `API_BASE` in `index.html` | where the app sends rounds; blank disables the whole thing |
+
+The Worker is deployed with `cd worker && npx wrangler deploy`. Validation
+lives server-side: 18 pars, 1–12 players, names ≤40 chars, and no score above
+double par — the app's own rule, enforced again at the door. CORS is limited to
+the site origin and bodies over 32KB are refused. That is proportionate to a
+camp scorecard, not real authentication: anyone who finds the endpoint can post
+a well-formed round.
 
 ## Offline
 

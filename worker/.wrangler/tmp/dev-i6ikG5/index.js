@@ -1,0 +1,360 @@
+var __defProp = Object.defineProperty;
+var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
+
+// src/index.js
+var HOLES = 18;
+var MAX_BODY = 32 * 1024;
+var MAX_PLAYERS = 12;
+var MAX_NAME = 40;
+var ALLOWED_ORIGINS = [
+  "https://claywiginton.github.io",
+  "http://localhost:8099"
+];
+function corsHeaders(origin) {
+  return {
+    "Access-Control-Allow-Origin": ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0],
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Max-Age": "86400",
+    "Vary": "Origin"
+  };
+}
+__name(corsHeaders, "corsHeaders");
+function json(data, status, origin) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: Object.assign(
+      { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
+      corsHeaders(origin)
+    )
+  });
+}
+__name(json, "json");
+function validate(b) {
+  if (!b || typeof b !== "object" || Array.isArray(b)) return "body must be an object";
+  if (typeof b.id !== "string" || !/^[A-Za-z0-9_-]{8,64}$/.test(b.id)) return "id must be 8-64 url-safe characters";
+  if (typeof b.played_on !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(b.played_on)) return "played_on must be YYYY-MM-DD";
+  if (!Array.isArray(b.pars) || b.pars.length !== HOLES) return "pars must have " + HOLES + " entries";
+  for (var i = 0; i < HOLES; i++) {
+    var par = b.pars[i];
+    if (!Number.isInteger(par) || par < 1 || par > 9) return "par on hole " + (i + 1) + " out of range";
+  }
+  if (!Array.isArray(b.players) || b.players.length < 1 || b.players.length > MAX_PLAYERS) {
+    return "players must be 1-" + MAX_PLAYERS + " entries";
+  }
+  for (var p = 0; p < b.players.length; p++) {
+    var pl = b.players[p];
+    if (!pl || typeof pl !== "object") return "player " + (p + 1) + " malformed";
+    if (typeof pl.name !== "string") return "player " + (p + 1) + " needs a name";
+    var name = pl.name.trim();
+    if (!name.length || name.length > MAX_NAME) return "player " + (p + 1) + " name must be 1-" + MAX_NAME + " characters";
+    if (!Array.isArray(pl.scores) || pl.scores.length !== HOLES) return "player " + (p + 1) + " needs " + HOLES + " scores";
+    for (var h = 0; h < HOLES; h++) {
+      var s = pl.scores[h];
+      if (s === null) continue;
+      if (!Number.isInteger(s) || s < 1 || s > b.pars[h] * 2) {
+        return "player " + (p + 1) + " score on hole " + (h + 1) + " out of range";
+      }
+    }
+  }
+  return null;
+}
+__name(validate, "validate");
+function summarise(pars, scores) {
+  var total = 0, toPar = 0, played = 0;
+  for (var h = 0; h < HOLES; h++) {
+    if (scores[h] == null) continue;
+    total += scores[h];
+    toPar += scores[h] - pars[h];
+    played++;
+  }
+  return { total, toPar, played };
+}
+__name(summarise, "summarise");
+async function putRound(env, body) {
+  var pars = body.pars;
+  var parTotal = pars.reduce(function(a, b) {
+    return a + b;
+  }, 0);
+  var finished = body.players.every(function(pl) {
+    return pl.scores.every(function(s) {
+      return s !== null;
+    });
+  });
+  var stmts = [
+    env.DB.prepare(
+      "INSERT INTO rounds (id, played_on, pars, par_total, hole_count, finished, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, datetime('now')) ON CONFLICT(id) DO UPDATE SET played_on=?2, pars=?3, par_total=?4, finished=?6, updated_at=datetime('now')"
+    ).bind(body.id, body.played_on, JSON.stringify(pars), parTotal, HOLES, finished ? 1 : 0),
+    // players are rewritten wholesale; a re-push is the newer truth
+    env.DB.prepare("DELETE FROM round_players WHERE round_id = ?1").bind(body.id)
+  ];
+  body.players.forEach(function(pl, i) {
+    var s = summarise(pars, pl.scores);
+    stmts.push(env.DB.prepare(
+      "INSERT INTO round_players (round_id, position, name, scores, total, to_par, holes_played) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)"
+    ).bind(body.id, i, pl.name.trim(), JSON.stringify(pl.scores), s.total, s.toPar, s.played));
+  });
+  await env.DB.batch(stmts);
+  return { id: body.id, finished };
+}
+__name(putRound, "putRound");
+async function listRounds(env, limit) {
+  var rounds = await env.DB.prepare(
+    "SELECT id, played_on, pars, par_total, finished, updated_at FROM rounds ORDER BY played_on DESC, updated_at DESC LIMIT ?1"
+  ).bind(limit).all();
+  var rows = rounds.results || [];
+  if (!rows.length) return [];
+  var marks = rows.map(function(_, i) {
+    return "?" + (i + 1);
+  }).join(",");
+  var stmt = env.DB.prepare(
+    "SELECT round_id, position, name, scores, total, to_par, holes_played FROM round_players WHERE round_id IN (" + marks + ") ORDER BY round_id, position"
+  );
+  var players = await stmt.bind.apply(stmt, rows.map(function(r) {
+    return r.id;
+  })).all();
+  var byRound = {};
+  (players.results || []).forEach(function(p) {
+    (byRound[p.round_id] = byRound[p.round_id] || []).push({
+      name: p.name,
+      scores: JSON.parse(p.scores),
+      total: p.total,
+      to_par: p.to_par,
+      holes_played: p.holes_played
+    });
+  });
+  return rows.map(function(r) {
+    return {
+      id: r.id,
+      played_on: r.played_on,
+      pars: JSON.parse(r.pars),
+      par_total: r.par_total,
+      finished: !!r.finished,
+      updated_at: r.updated_at,
+      players: byRound[r.id] || []
+    };
+  });
+}
+__name(listRounds, "listRounds");
+var src_default = {
+  async fetch(request, env) {
+    var origin = request.headers.get("Origin") || "";
+    var url = new URL(request.url);
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: corsHeaders(origin) });
+    }
+    if (url.pathname === "/health") {
+      return json({ ok: true }, 200, origin);
+    }
+    if (url.pathname !== "/rounds") {
+      return json({ error: "not found" }, 404, origin);
+    }
+    try {
+      if (request.method === "GET") {
+        var limit = parseInt(url.searchParams.get("limit") || "50", 10);
+        if (!Number.isFinite(limit) || limit < 1) limit = 50;
+        if (limit > 100) limit = 100;
+        return json({ rounds: await listRounds(env, limit) }, 200, origin);
+      }
+      if (request.method === "POST") {
+        var raw = await request.text();
+        if (raw.length > MAX_BODY) return json({ error: "payload too large" }, 413, origin);
+        var body;
+        try {
+          body = JSON.parse(raw);
+        } catch (e) {
+          return json({ error: "invalid JSON" }, 400, origin);
+        }
+        var problem = validate(body);
+        if (problem) return json({ error: problem }, 422, origin);
+        return json(await putRound(env, body), 200, origin);
+      }
+    } catch (err) {
+      return json({ error: "server error", detail: String(err && err.message || err) }, 500, origin);
+    }
+    return json({ error: "method not allowed" }, 405, origin);
+  }
+};
+
+// ../../../../root/.npm/_npx/d77349f55c2be1c0/node_modules/wrangler/templates/middleware/middleware-ensure-req-body-drained.ts
+var drainBody = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx) => {
+  try {
+    return await middlewareCtx.next(request, env);
+  } finally {
+    try {
+      if (request.body !== null && !request.bodyUsed) {
+        const reader = request.body.getReader();
+        while (!(await reader.read()).done) {
+        }
+      }
+    } catch (e) {
+      console.error("Failed to drain the unused request body.", e);
+    }
+  }
+}, "drainBody");
+var middleware_ensure_req_body_drained_default = drainBody;
+
+// ../../../../root/.npm/_npx/d77349f55c2be1c0/node_modules/wrangler/templates/middleware/middleware-miniflare3-json-error.ts
+function reduceError(e) {
+  return {
+    name: e?.name,
+    message: e?.message ?? String(e),
+    stack: e?.stack,
+    cause: e?.cause === void 0 ? void 0 : reduceError(e.cause)
+  };
+}
+__name(reduceError, "reduceError");
+var jsonError = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx) => {
+  try {
+    return await middlewareCtx.next(request, env);
+  } catch (e) {
+    const error = reduceError(e);
+    const body = JSON.stringify(error);
+    const headers = {
+      "Content-Type": "application/json",
+      "MF-Experimental-Error-Stack": "true"
+    };
+    const encoded = encodeURIComponent(body);
+    if (encoded.length <= 8192) {
+      headers["MF-Experimental-Error-Stack-Payload"] = encoded;
+    }
+    return new Response(body, { status: 500, headers });
+  }
+}, "jsonError");
+var middleware_miniflare3_json_error_default = jsonError;
+
+// .wrangler/tmp/bundle-AdD7b4/middleware-insertion-facade.js
+var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
+  middleware_ensure_req_body_drained_default,
+  middleware_miniflare3_json_error_default
+];
+var middleware_insertion_facade_default = src_default;
+
+// ../../../../root/.npm/_npx/d77349f55c2be1c0/node_modules/wrangler/templates/middleware/common.ts
+var __facade_middleware__ = [];
+function __facade_register__(...args) {
+  __facade_middleware__.push(...args.flat());
+}
+__name(__facade_register__, "__facade_register__");
+function __facade_invokeChain__(request, env, ctx, dispatch, middlewareChain) {
+  const [head, ...tail] = middlewareChain;
+  const middlewareCtx = {
+    dispatch,
+    next(newRequest, newEnv) {
+      return __facade_invokeChain__(newRequest, newEnv, ctx, dispatch, tail);
+    }
+  };
+  return head(request, env, ctx, middlewareCtx);
+}
+__name(__facade_invokeChain__, "__facade_invokeChain__");
+function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
+  return __facade_invokeChain__(request, env, ctx, dispatch, [
+    ...__facade_middleware__,
+    finalMiddleware
+  ]);
+}
+__name(__facade_invoke__, "__facade_invoke__");
+
+// .wrangler/tmp/bundle-AdD7b4/middleware-loader.entry.ts
+var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
+  constructor(scheduledTime, cron, noRetry) {
+    this.scheduledTime = scheduledTime;
+    this.cron = cron;
+    this.#noRetry = noRetry;
+  }
+  scheduledTime;
+  cron;
+  static {
+    __name(this, "__Facade_ScheduledController__");
+  }
+  #noRetry;
+  noRetry() {
+    if (!(this instanceof ___Facade_ScheduledController__)) {
+      throw new TypeError("Illegal invocation");
+    }
+    this.#noRetry();
+  }
+};
+function wrapExportedHandler(worker) {
+  if (__INTERNAL_WRANGLER_MIDDLEWARE__ === void 0 || __INTERNAL_WRANGLER_MIDDLEWARE__.length === 0) {
+    return worker;
+  }
+  for (const middleware of __INTERNAL_WRANGLER_MIDDLEWARE__) {
+    __facade_register__(middleware);
+  }
+  const fetchDispatcher = /* @__PURE__ */ __name(function(request, env, ctx) {
+    if (worker.fetch === void 0) {
+      throw new Error("Handler does not export a fetch() function.");
+    }
+    return worker.fetch(request, env, ctx);
+  }, "fetchDispatcher");
+  return {
+    ...worker,
+    fetch(request, env, ctx) {
+      const dispatcher = /* @__PURE__ */ __name(function(type, init) {
+        if (type === "scheduled" && worker.scheduled !== void 0) {
+          const controller = new __Facade_ScheduledController__(
+            Date.now(),
+            init.cron ?? "",
+            () => {
+            }
+          );
+          return worker.scheduled(controller, env, ctx);
+        }
+      }, "dispatcher");
+      return __facade_invoke__(request, env, ctx, dispatcher, fetchDispatcher);
+    }
+  };
+}
+__name(wrapExportedHandler, "wrapExportedHandler");
+function wrapWorkerEntrypoint(klass) {
+  if (__INTERNAL_WRANGLER_MIDDLEWARE__ === void 0 || __INTERNAL_WRANGLER_MIDDLEWARE__.length === 0) {
+    return klass;
+  }
+  for (const middleware of __INTERNAL_WRANGLER_MIDDLEWARE__) {
+    __facade_register__(middleware);
+  }
+  return class extends klass {
+    #fetchDispatcher = /* @__PURE__ */ __name((request, env, ctx) => {
+      this.env = env;
+      this.ctx = ctx;
+      if (super.fetch === void 0) {
+        throw new Error("Entrypoint class does not define a fetch() function.");
+      }
+      return super.fetch(request);
+    }, "#fetchDispatcher");
+    #dispatcher = /* @__PURE__ */ __name((type, init) => {
+      if (type === "scheduled" && super.scheduled !== void 0) {
+        const controller = new __Facade_ScheduledController__(
+          Date.now(),
+          init.cron ?? "",
+          () => {
+          }
+        );
+        return super.scheduled(controller);
+      }
+    }, "#dispatcher");
+    fetch(request) {
+      return __facade_invoke__(
+        request,
+        this.env,
+        this.ctx,
+        this.#dispatcher,
+        this.#fetchDispatcher
+      );
+    }
+  };
+}
+__name(wrapWorkerEntrypoint, "wrapWorkerEntrypoint");
+var WRAPPED_ENTRY;
+if (typeof middleware_insertion_facade_default === "object") {
+  WRAPPED_ENTRY = wrapExportedHandler(middleware_insertion_facade_default);
+} else if (typeof middleware_insertion_facade_default === "function") {
+  WRAPPED_ENTRY = wrapWorkerEntrypoint(middleware_insertion_facade_default);
+}
+var middleware_loader_entry_default = WRAPPED_ENTRY;
+export {
+  __INTERNAL_WRANGLER_MIDDLEWARE__,
+  middleware_loader_entry_default as default
+};
+//# sourceMappingURL=index.js.map

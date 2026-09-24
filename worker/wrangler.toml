@@ -1,0 +1,9 @@
+name = "fussballgolf-api"
+main = "src/index.js"
+compatibility_date = "2026-09-24"
+
+# The database and its schema already exist — see ../schema.sql
+[[d1_databases]]
+binding = "DB"
+database_name = "fussballgolf"
+database_id = "83d5096d-6871-4afb-8b04-a06b272efa1c"

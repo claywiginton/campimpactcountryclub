@@ -131,6 +131,17 @@
   .note.warn{color:var(--red);font-weight:600}
   .pcard.missing{border-color:var(--red);background:var(--surface-2)}
 
+  /* past rounds */
+  .hrow{
+    display:flex;align-items:baseline;gap:10px;padding:11px 0;
+    border-bottom:1px solid var(--line-soft)
+  }
+  .hrow:last-child{border-bottom:0}
+  .hrow .d{font-weight:700;flex:none;font-variant-numeric:tabular-nums}
+  .hrow .w{flex:1;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .hrow .s{flex:none;font-weight:700;font-variant-numeric:tabular-nums}
+  .hrow .pending{color:var(--ink-2);font-size:13px;flex:none}
+
   /* ---------- course strip ---------- */
   .nine{margin-bottom:10px}
   .nine table{
@@ -319,6 +330,11 @@
       </div>
     </div>
 
+    <div id="historyWrap" class="hide">
+      <h2>Fr&uuml;here Runden</h2>
+      <div class="card"><div id="history"></div></div>
+    </div>
+
     <button class="btn" id="startBtn">Runde starten</button>
     <button class="btn ghost" id="setupRulesBtn" style="margin-top:10px">Regeln lesen</button>
     <div id="resumeWrap" class="hide" style="margin-top:10px">
@@ -360,6 +376,8 @@
         <span><i></i>Doppel-Bogey oder mehr</span>
       </div>
     </div>
+
+    <p class="note" id="syncNote"></p>
 
     <div class="stack" style="margin-top:18px">
       <button class="btn ghost" id="shareBtn">Scorekarte als Text kopieren</button>
@@ -495,16 +513,97 @@
   var HOLES = 18;
   var DEFAULT_PARS = [4,4,3,4,4,4,4,5,5,3,4,5,3,4,5,3,3,5]; // out 37 / in 35 / par 72
   var KEY = "cicc-soccer-golf-v1";
+  var ARCHIVE_KEY = "cicc-archive-v1";
+
+  // Round store. Empty would mean the app runs purely on the phone, as it did before.
+  var API_BASE = "https://fussballgolf-api.chipandclay.workers.dev";
 
   var state = {
+    id: null,             // round id, created at tee-off, stable across re-syncs
+    playedOn: null,       // YYYY-MM-DD
     players: [],          // [{id, name}]
     pars: DEFAULT_PARS.slice(),   // fixed — the course doesn't change
     scores: {},           // { playerId: [18 slots, null = not played] }
     hole: 0,              // 0-based
-    started: false
+    started: false,
+    synced: false         // true once the store has this round's current state
   };
+  var archive = [];       // finished rounds still on this phone
   var view = "setup";
   var backTo = "setup";   // where the Back button on the rules screen returns to
+
+  /* ---------------- round store ----------------
+     The phone owns the round. Pushing it to the database is a background
+     errand that is allowed to fail: every round carries a stable id, so a
+     push that never landed simply happens later, and arriving twice is a
+     no-op rather than a duplicate. */
+
+  function roundPayload(r){
+    return {
+      id: r.id,
+      played_on: r.playedOn,
+      pars: r.pars,
+      players: r.players.map(function(p){
+        return { name: p.name.trim(), scores: (r.scores[p.id] || []).slice() };
+      })
+    };
+  }
+  function hasAnyScore(r){
+    return r.players.some(function(p){
+      return (r.scores[p.id] || []).some(function(s){ return s != null; });
+    });
+  }
+
+  var pushTimer = null;
+  function queuePush(){
+    state.synced = false;
+    if(!API_BASE) return;
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(pushPending, 2500);
+  }
+
+  function pushOne(r){
+    return fetch(API_BASE + "/rounds", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(roundPayload(r))
+    }).then(function(res){
+      if(!res.ok) throw new Error("store rejected the round: " + res.status);
+      return true;
+    });
+  }
+
+  // Everything this phone holds that the store has not confirmed.
+  function pushPending(){
+    if(!API_BASE || !navigator.onLine) return Promise.resolve();
+    var jobs = [];
+
+    archive.forEach(function(r){
+      if(r.synced) return;
+      jobs.push(pushOne(r).then(function(){ r.synced = true; saveArchive(); }, function(){}));
+    });
+    if(state.started && state.players.length && hasAnyScore(state) && !state.synced){
+      jobs.push(pushOne(state).then(function(){
+        state.synced = true; save(); if(view === "card") renderSyncNote();
+      }, function(){}));
+    }
+    return Promise.all(jobs).then(function(){ if(view === "setup") renderHistory(); });
+  }
+
+  // Finished rounds move to the archive so a new round starts clean.
+  function archiveCurrentRound(){
+    if(!state.id || !hasAnyScore(state)) return;
+    var copy = JSON.parse(JSON.stringify({
+      id: state.id, playedOn: state.playedOn, players: state.players,
+      pars: state.pars, scores: state.scores, synced: state.synced
+    }));
+    archive = archive.filter(function(r){ return r.id !== copy.id; });
+    archive.unshift(copy);
+    if(archive.length > 40) archive.length = 40;   // the phone is not the archive
+    saveArchive();
+  }
+
+  window.addEventListener("online", function(){ pushPending(); });
 
   /* ---------------- screen wake lock ----------------
      A phone that sleeps between holes means unlocking it with muddy hands
@@ -532,6 +631,22 @@
   function save(){
     try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){}
   }
+  function saveArchive(){
+    try { localStorage.setItem(ARCHIVE_KEY, JSON.stringify(archive)); } catch(e){}
+  }
+  function loadArchive(){
+    try {
+      var a = JSON.parse(localStorage.getItem(ARCHIVE_KEY) || "[]");
+      return Array.isArray(a) ? a : [];
+    } catch(e){ return []; }
+  }
+  function today(){
+    var d = new Date(), p = function(n){ return (n < 10 ? "0" : "") + n; };
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+  }
+  function newRoundId(){
+    return "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+  }
   function load(){
     try {
       var raw = localStorage.getItem(KEY);
@@ -551,6 +666,8 @@
         }
       });
       s.hole = Math.min(Math.max(0, s.hole|0), HOLES-1);
+      if(!s.id) s.id = newRoundId();
+      if(!s.playedOn) s.playedOn = today();
       return s;
     } catch(e){ return null; }
   }
@@ -636,10 +753,82 @@
   }
 
   function render(){
-    if(view === "setup") renderSetup();
+    if(view === "setup"){ renderSetup(); renderHistory(); }
     if(view === "play") renderPlay();
-    if(view === "card") renderCard();
+    if(view === "card"){ renderCard(); renderSyncNote(); }
     // the rules screen is static — nothing to render
+  }
+
+  /* ---------------- past rounds ---------------- */
+  var remoteRounds = null;   // null until the store answers; [] is a real empty answer
+
+  function fetchHistory(){
+    if(!API_BASE || !navigator.onLine) return;
+    fetch(API_BASE + "/rounds?limit=25")
+      .then(function(res){ return res.ok ? res.json() : null; })
+      .then(function(data){
+        if(!data || !Array.isArray(data.rounds)) return;
+        remoteRounds = data.rounds;
+        if(view === "setup") renderHistory();
+      }, function(){});
+  }
+
+  // Whatever the store knows, plus anything on this phone it has not confirmed.
+  function historyRows(){
+    var rows = [], seen = {};
+    (remoteRounds || []).forEach(function(r){
+      seen[r.id] = true;
+      rows.push({ id: r.id, date: r.played_on, players: r.players, pending: false });
+    });
+    archive.concat(state.started && hasAnyScore(state) ? [state] : []).forEach(function(r){
+      if(seen[r.id] || !hasAnyScore(r)) return;
+      seen[r.id] = true;
+      rows.push({
+        id: r.id, date: r.playedOn, pending: !r.synced,
+        players: r.players.map(function(p){
+          var card = r.scores[p.id] || [], t = 0, d = 0, n = 0;
+          for(var h=0;h<HOLES;h++){
+            if(card[h] == null) continue;
+            t += card[h]; d += card[h] - r.pars[h]; n++;
+          }
+          return { name: p.name, total: t, to_par: d, holes_played: n };
+        })
+      });
+    });
+    rows.sort(function(a, b){ return a.date < b.date ? 1 : (a.date > b.date ? -1 : 0); });
+    return rows;
+  }
+
+  function fmtDate(iso){
+    var p = String(iso || "").split("-");
+    return p.length === 3 ? p[2] + "." + p[1] + "." + p[0].slice(2) : String(iso || "");
+  }
+
+  function renderHistory(){
+    var rows = historyRows();
+    $("historyWrap").classList.toggle("hide", rows.length === 0);
+    var box = $("history");
+    box.innerHTML = "";
+    rows.forEach(function(r){
+      var best = r.players.slice().filter(function(p){ return p.holes_played > 0; })
+        .sort(function(a, b){ return a.to_par - b.to_par; })[0];
+      var row = el("div","hrow");
+      row.appendChild(el("span","d", fmtDate(r.date)));
+      row.appendChild(el("span","w", best
+        ? best.name + (r.players.length > 1 ? " +" + (r.players.length - 1) : "")
+        : r.players.length + " Spieler"));
+      if(r.pending) row.appendChild(el("span","pending","offline"));
+      if(best) row.appendChild(el("span","s", best.total + " (" + fmtToPar(best.to_par) + ")"));
+      box.appendChild(row);
+    });
+  }
+
+  function renderSyncNote(){
+    var note = $("syncNote");
+    if(!API_BASE){ note.textContent = ""; return; }
+    note.textContent = state.synced
+      ? "In der Datenbank gespeichert."
+      : "Noch nicht gespeichert \u2014 wird bei Verbindung nachgeholt.";
   }
 
   /* ---------------- setup ---------------- */
@@ -749,6 +938,7 @@
             // tapping the selected score clears it
             state.scores[p.id][h] = (state.scores[p.id][h] === val) ? null : val;
             save();
+            queuePush();
             renderPlay();
           });
           chips.appendChild(c);
@@ -910,6 +1100,8 @@
       return;
     }
     state.started = true;
+    if(!state.id) state.id = newRoundId();
+    state.playedOn = state.playedOn || today();
     state.hole = firstUnfinishedHole();
     save();
     show("play");
@@ -967,15 +1159,21 @@
   });
 
   $("newRoundBtn").addEventListener("click", function(){
-    if(!window.confirm("Alle Ergebnisse löschen und neu starten? Die Spieler bleiben erhalten.")) return;
+    if(!window.confirm("Runde abschließen und neu starten? Die Spieler bleiben erhalten.")) return;
+    archiveCurrentRound();
+    pushPending();
     state.players.forEach(function(p){ state.scores[p.id] = blankCard(); });
+    state.id = newRoundId();
+    state.playedOn = today();
     state.hole = 0;
     state.started = false;
+    state.synced = false;
     save();
     show("setup");
   });
 
   /* ---------------- boot ---------------- */
+  archive = loadArchive();
   var saved = load();
   if(saved){
     state = saved;
@@ -989,6 +1187,8 @@
   } else {
     show("setup");
   }
+  fetchHistory();
+  pushPending();
 })();
 </script>
 <!-- offline:start -->
