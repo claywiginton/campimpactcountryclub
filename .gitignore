@@ -1,0 +1,9 @@
+# wrangler's local emulator state and build output — machine-local, never shared
+.wrangler/
+worker/.wrangler/
+
+# local secrets, if any are ever added
+.dev.vars
+.env
+
+node_modules/
